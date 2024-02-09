@@ -1,0 +1,10 @@
+version: '3'
+services:
+  backend:
+    image: ttk-back2:latest
+    ports:
+      - "4000:4000"
+    volumes:
+      - videos:/app/uploads
+volumes:
+  videos:
