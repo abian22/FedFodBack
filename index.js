@@ -45,7 +45,7 @@ function startExpress() {
 }
 
 const driveAuth = new google.auth.GoogleAuth({
-  keyFile: './feedFoodDrive.json',
+  // keyFile: './feedFoodDrive.json',
   scopes: 'https://www.googleapis.com/auth/drive.file',
 });
 
