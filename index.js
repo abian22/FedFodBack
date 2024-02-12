@@ -8,6 +8,7 @@ const cors = require("cors")
 const passport = require('passport');
 const GoogleStrategy = require("passport-google-oauth20")
 const { google } = require('googleapis');
+const MongoStore = require("connect-mongo");
 const drive = google.drive('v3');
 
 
@@ -16,7 +17,10 @@ function startExpress() {
   app.use(require('express-session')({ 
     secret: 'Enter your secret key',
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+    }),
   }));
   app.use(passport.initialize());
   app.use(
