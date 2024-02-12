@@ -16,7 +16,6 @@ dist-ssr
 *.dll
 *.jar
 *.zip
-*.json
 uploads/
 
 # Editor directories and files
