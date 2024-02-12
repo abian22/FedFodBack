@@ -1,5 +1,5 @@
 const dotenv = require("dotenv").config()
-const User = require ("./models/user.model.js")
+const User = require ("./src/models/user.model.js")
 
 const express = require("express")
 const mongoose = require("mongoose")
@@ -27,7 +27,7 @@ function startExpress() {
   )
 
   app.use(express.json())
-  app.use("/api", require("./routes/index"))
+  app.use("/api", require("./src/routes/index"))
   app.use(morgan("dev"))
 
   mongoose
