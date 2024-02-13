@@ -8,9 +8,9 @@ const Video = require("../models/video.model");
 // const storage = multer.memoryStorage();
 
 
-const storage = multer.diskStorage({
+const storage = multer.memoryStorage({
   destination: function (req, file, cb) {
-    cb(null, "app/uploads")
+    cb(null, "uploads")
   },
   filename: function (req, file, cb) {
     const extension = path.extname(file.originalname)

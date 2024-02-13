@@ -9,3 +9,5 @@ services:
     volumes:
       - videos:/app/uploads
 
+volumes:
+  videos:
