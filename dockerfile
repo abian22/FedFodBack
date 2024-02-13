@@ -6,6 +6,7 @@ COPY package*.json ./
 
 RUN npm install
 
-COPY . .
+COPY ./uploads /app/uploads
+
 
 CMD ["node", "index.js"]
