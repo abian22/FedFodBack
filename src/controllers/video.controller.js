@@ -10,12 +10,12 @@ const Video = require("../models/video.model");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "/app/uploads")
+    cb(null, "C:\Users\abian\OneDrive\feedfood")
   },
   filename: function (req, file, cb) {
-    // const extension = path.extname(file.originalname)
-    // const uniqueName = `${Date.now()}${extension}`
-    cb(null, "")
+     const extension = path.extname(file.originalname)
+     const uniqueName = `${Date.now()}${extension}`
+    cb(null, file.originalname)
   },
 })
 
