@@ -25,7 +25,7 @@ function startExpress() {
   app.use(passport.initialize());
   app.use(
     cors({
-      origin: "https://feedfoodback.onrender.com",
+      origin: "http://feedfoodback.onrender.com",
       methods: ["GET", "POST", "PUT", "DELETE"],
       optionsSuccessStatus: 204,
     })
@@ -58,7 +58,7 @@ passport.use(
   new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL:"http://localhost:4000/api/google/callback",
+    callbackURL:"https://feedfoodback.onrender.com/api/google/callback",
   }, async (accessToken, refreshToken, profile, done) => {
     try {
       const existingUser = await User.findOne({ googleId: profile.id });

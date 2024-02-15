@@ -3,9 +3,7 @@ services:
   backend:
     image: ttk-back2:latest
     ports:
-      - "4000:4000"
-    environment: 
-      - BACKEND_URL=https://feedfoodback.onrender.com
+      - "443:4000"
     volumes:
       - videos:/app/uploads
 
