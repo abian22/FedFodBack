@@ -1,5 +1,4 @@
-FROM abian22/ttk-back2:latest
-
+FROM node:16
 
 WORKDIR /app
 
