@@ -16,4 +16,4 @@ services:
       - uploads:/app/uploads
 
 volumes:
-  uploads:
+  uploads: /Users/abian/OneDrive/Escritorio/feed/
