@@ -18,4 +18,4 @@ ENV GOOGLE_CLIENT_SECRET=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
 
 EXPOSE $PORT
 
-CMD ["npm", "start"]
+CMD ["node", "index.js"]
