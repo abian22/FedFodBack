@@ -1,11 +1,19 @@
 version: '3'
 services:
-  backend:
-    image: ttk-back2:latest
+  tu_servicio:
+    image: abian22/ttk-back2:latest
     ports:
-      - "443:4000"
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - DB_NAME=AbiApp
+      - MONGODB_URI=mongodb+srv://Abian:DtF6dKt3icku2UIU@cluster0.jdwi1h4.mongodb.net/AbiApp
+      - BCRYPT_SALTROUNDS=10
+      - SECRET=ThisIsaSecret
+      - GOOGLE_CLIENT_ID=117559184212-j99liov0t8l1ct5rb3rqf89c1a9sfjkt.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
     volumes:
-      - videos:/app/uploads
+      - uploads:/app/uploads
 
 volumes:
-  videos:
+  uploads:
