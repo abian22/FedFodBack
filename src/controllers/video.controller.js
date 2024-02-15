@@ -10,7 +10,7 @@ const Video = require("../models/video.model");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "app/uploads")
+    cb(null, "/mnt/data/uploads")
   },
   filename: function (req, file, cb) {
      const extension = path.extname(file.originalname)
