@@ -16,7 +16,6 @@ dist-ssr
 *.dll
 *.jar
 *.zip
-uploads/
 
 # Editor directories and files
 .vscode/*
