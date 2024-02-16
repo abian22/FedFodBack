@@ -67,17 +67,17 @@ const upload = multer({ storage: storage })
 //   }
 // }
 
-async function handleUpload(fileBuffer) {
+async function handleUpload(fileBuffer, resourceType) {
   try {
     if (!fileBuffer || !Buffer.isBuffer(fileBuffer)) {
       throw new Error("Invalid file buffer: File buffer is null or undefined.");
     }
 
     const b64 = fileBuffer.toString("base64");
-    const dataURI = "data:video/mp4;base64," + b64;
+    const dataURI = `data:${resourceType}/;base64,${b64}`;
 
     const cloudinaryUploadResult = await cloudinary.uploader.upload(dataURI, {
-      resource_type: "video",
+      resource_type: resourceType,
     });
 
     return cloudinaryUploadResult;
@@ -97,32 +97,42 @@ async function uploadMyVideo(req, res) {
     }
 
     // Utiliza el middleware upload.single para manejar el archivo
-    upload.single("video")(req, res, async function (err) {
+    upload.single("file")(req, res, async function (err) {
       if (err) {
-        console.error("Error during video upload:", err);
+        console.error("Error during file upload:", err);
         return res
           .status(500)
-          .json({ error: "Error during video upload", details: err.message });
+          .json({ error: "Error during file upload", details: err.message });
       }
 
       const fileBuffer = req.file.buffer; // Accede al buffer del archivo
 
-      const cldRes = await handleUpload(fileBuffer);
+      let resourceType;
+      if (req.file.mimetype.startsWith("image/")) {
+        resourceType = "image";
+      } else if (req.file.mimetype.startsWith("video/")) {
+        resourceType = "video";
+      } else {
+        console.error("Unsupported file type:", req.file.mimetype);
+        return res.status(400).json({ error: "Unsupported file type" });
+      }
 
-      const newVideo = new Video({
+      const cldRes = await handleUpload(fileBuffer, resourceType);
+
+      const newMedia = new Media({
         uploadedBy: user._id,
         description: req.body.description,
-        videoUrl: cldRes.secure_url,
+        mediaUrl: cldRes.secure_url,
       });
 
-      const savedVideo = await newVideo.save();
-      console.log("Video saved", savedVideo);
+      const savedMedia = await newMedia.save();
+      console.log("Media saved", savedMedia);
 
-      res.json({ message: "Video uploaded", video: savedVideo });
+      res.json({ message: "Media uploaded", media: savedMedia });
     });
   } catch (error) {
-    console.error("Error during video upload:", error);
-    res.status(500).json({ error: "Error during video upload", details: error.message });
+    console.error("Error during media upload:", error);
+    res.status(500).json({ error: "Error during media upload", details: error.message });
   }
 }
 
