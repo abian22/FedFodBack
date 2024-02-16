@@ -33,7 +33,9 @@ const storage = multer.memoryStorage({
 // }
 //)
 
-const upload = multer({ storage: storage })
+const upload = multer({
+  dest: '../../uploads',  // Ajusta la carpeta de destino según tus necesidades
+});
 
 // async function uploadToDrive(fileBuffer, fileName, folderId) {
 //   const auth = new google.auth.GoogleAuth({
@@ -90,9 +92,9 @@ function uploadMyVideo(req, res) {
       return res.status(401).json({ error: "User not authenticated" });
     }
 
-    if(req.files?.video) {
-      const result = await uploadCloudinary(req.files?.video)
-      console.log(result)
+    if (req.files && req.files.video) {
+      const result = await uploadCloudinary(req.files.video);
+      console.log(result);
     }
 
     const newVideo = new Video({
