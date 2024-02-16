@@ -16,7 +16,7 @@ cloudinary.config({
 });
 
 
-const storage = multer.diskStorage({
+const storage = multer.memoryStorage({
   filename: function (req, file, cb) {
     cb(null, file.originalname)
   }
@@ -69,19 +69,24 @@ const upload = multer({ storage: storage })
 
 async function handleUpload(fileBuffer) {
   try {
+    if (!fileBuffer || !Buffer.isBuffer(fileBuffer)) {
+      throw new Error("Invalid file buffer: File buffer is null or undefined.");
+    }
+
     const b64 = fileBuffer.toString("base64");
     const dataURI = "data:video/mp4;base64," + b64;
-    
-    const res = await cloudinary.uploader.upload(dataURI, {
+
+    const cloudinaryUploadResult = await cloudinary.uploader.upload(dataURI, {
       resource_type: "video",
     });
-    
-    return res;
+
+    return cloudinaryUploadResult;
   } catch (error) {
-    console.error("Error during Cloudinary upload:", error);
+    console.error("Error during Cloudinary upload:", error.message);
     throw error;
   }
 }
+
 
 async function uploadMyVideo(req, res) {
   try {
@@ -108,7 +113,7 @@ async function uploadMyVideo(req, res) {
       const newVideo = new Video({
         uploadedBy: user._id,
         description: req.body.description,
-        videoUrl: cldRes.secure_url,  // Agrega la URL de Cloudinary al objeto del video
+        videoUrl: cldRes.secure_url,
       });
 
       const savedVideo = await newVideo.save();
@@ -121,7 +126,6 @@ async function uploadMyVideo(req, res) {
     res.status(500).json({ error: "Error during video upload", details: error.message });
   }
 }
-
 async function uploadVideo(req, res) {
   upload.single("video")(req, res, async function (err) {
     if (err) {
