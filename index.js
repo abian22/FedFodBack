@@ -33,14 +33,15 @@ function startExpress() {
       optionsSuccessStatus: 204,
     })
   )
+  app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir:"./uploads"
+  }))
 
   app.use(express.json())
   app.use("/api", require("./src/routes/index"))
   app.use(morgan("dev"))
-  app.use(fileUpload({
-    useTempFiles: true,
-    tempFileDir:"/uploads"
-  }))
+
 
   mongoose
     .connect(process.env.MONGODB_URI, {

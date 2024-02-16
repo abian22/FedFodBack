@@ -90,8 +90,9 @@ function uploadMyVideo(req, res) {
       return res.status(401).json({ error: "User not authenticated" });
     }
 
-    if(req.files) {
-      uploadCloudinary
+    if(req.files?.video) {
+      const result = await uploadCloudinary(req.files?.video)
+      console.log(result)
     }
 
     const newVideo = new Video({
