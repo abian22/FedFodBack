@@ -75,7 +75,7 @@ function uploadMyVideo(req, res) {
         .status(500)
         .json({ error: "Error during video upload", details: err.message });
     }
-
+    console.log(req.file)
     const user = res.locals.user;
 
     if (!user) {
@@ -111,7 +111,7 @@ async function uploadVideo(req, res) {
         .json({ error: "Error during video upload", details: err.message });
     }
 
-    console.log(req.file)
+ 
     const user = res.locals.user;
 
     if (!user) {
