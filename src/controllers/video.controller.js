@@ -2,22 +2,32 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs").promises;
 const Video = require("../models/video.model");
+const cloudinary = require("cloudinary").v2;
+
 
 // const { google } = require('googleapis');
 // const { createReadStream } = require("streamifier");
 // const storage = multer.memoryStorage();
 
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "//DESKTOP-J2M9R7S/feed")
-  },
-  filename: function (req, file, cb) {
-     const extension = path.extname(file.originalname)
-     const uniqueName = `${Date.now()}${extension}`
-    cb(null, "")
-  },
-})
+
+const storage = multer.memoryStorage(
+//{
+//   destination: function (req, file, cb) {
+//     cb(null, "/uploads")
+//   },
+//   filename: function (req, file, cb) {
+//      const extension = path.extname(file.originalname)
+//      const uniqueName = `${Date.now()}${extension}`
+//     cb(null, "")
+//   },
+// }
+)
 
 const upload = multer({ storage: storage })
 
@@ -53,15 +63,15 @@ const upload = multer({ storage: storage })
 //   }
 // }
 
-async function uploadMyVideo(req, res) {
-  upload.single("video")(req, res, async function (err) {
-    if (err) {
-      console.error("Error during video upload:", err);
-      return res
-        .status(500)
-        .json({ error: "Error during video upload", details: err.message });
-    }
+async function handleUpload(file) {
+  const res = await cloudinary.uploader.upload(file, {
+    resource_type: "auto",
+  });
+  return res;
+}
 
+async function uploadMyVideo(req, res) {
+  try {
     const user = res.locals.user;
 
     if (!user) {
@@ -74,18 +84,27 @@ async function uploadMyVideo(req, res) {
       description: req.body.description,
     });
 
-    try {
-      const savedVideo = await newVideo.save();
-      console.log("Video saved", savedVideo);
-      res.send("Video uploaded");
-    } catch (error) {
-      console.error("Error saving the video:", error);
-      return res.status(500).json({
-        error: "Error saving the video",
-        details: error.message,
-      });
-    }
-  });
+    // Obtén el archivo del cuerpo de la solicitud (req.file no se utiliza aquí)
+    const fileBuffer = req.body.my_video_data;
+
+    const b64 = Buffer.from(fileBuffer, "base64").toString("base64");
+    const dataURI = "data:video/mp4;base64," + b64;
+
+    // Utiliza la función handleUpload para subir el video a Cloudinary
+    const cldRes = await handleUpload(dataURI);
+
+    // Agrega la URL de Cloudinary al objeto del video
+    newVideo.videoUrl = cldRes.secure_url;
+
+    // Guarda el video en la base de datos
+    const savedVideo = await newVideo.save();
+
+    console.log("Video saved", savedVideo);
+    res.json({ message: "Video uploaded", video: savedVideo });
+  } catch (error) {
+    console.error("Error during video upload:", error);
+    res.status(500).json({ error: "Error during video upload", details: error.message });
+  }
 }
 
 
