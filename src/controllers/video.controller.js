@@ -67,26 +67,25 @@ const upload = multer({ storage: storage })
 //   }
 // }
 
-// async function handleUpload(fileBuffer) {
-//   try {
-//     if (!fileBuffer || !Buffer.isBuffer(fileBuffer)) {
-//       throw new Error("Invalid file buffer: File buffer is null or undefined.");
-//     }
+async function handleUpload(fileBuffer) {
+  try {
+    if (!fileBuffer || !Buffer.isBuffer(fileBuffer)) {
+      throw new Error("Invalid file buffer: File buffer is null or undefined.");
+    }
 
-//     const b64 = fileBuffer.toString("base64");
-//     const dataURI = "data:video/mp4;base64," + b64;
+    const b64 = fileBuffer.toString("base64");
+    const dataURI = "data:video/mp4;base64," + b64;
 
-//     const cloudinaryUploadResult = await cloudinary.uploader.upload(dataURI, {
-//       resource_type: "video",
-//     });
+    const cloudinaryUploadResult = await cloudinary.uploader.upload(dataURI, {
+      resource_type: "video",
+    });
 
-//     return cloudinaryUploadResult;
-//   } catch (error) {
-//     console.error("Error during Cloudinary upload:", error.message);
-//     throw error;
-//   }
-// }
-
+    return cloudinaryUploadResult;
+  } catch (error) {
+    console.error("Error during Cloudinary upload:", error.message);
+    throw error;
+  }
+}
 
 async function uploadMyVideo(req, res) {
   try {
@@ -125,6 +124,44 @@ async function uploadMyVideo(req, res) {
     console.error("Error during video upload:", error);
     res.status(500).json({ error: "Error during video upload", details: error.message });
   }
+}
+
+
+async function uploadVideo(req, res) {
+  upload.single("video")(req, res, async function (err) {
+    if (err) {
+      console.error("Error during video upload:", err);
+      return res
+        .status(500)
+        .json({ error: "Error during video upload", details: err.message });
+    }
+
+    const user = res.locals.user;
+
+    if (!user) {
+      console.error("User not authenticated");
+      return res.status(401).json({ error: "User not authenticated" });
+    }
+
+    const userId = req.params.userId;
+
+    const newVideo = new Video({
+      uploadedBy: userId,
+      description: req.body.description,
+    });
+
+    try {
+      const savedVideo = await newVideo.save();
+      console.log("Video saved", savedVideo);
+      res.send("Video uploaded");
+    } catch (error) {
+      console.error("Error saving the video:", error);
+      return res.status(500).json({
+        error: "Error saving the video",
+        details: error.message,
+      });
+    }
+  });
 }
 
 async function getVideos(req, res) {
