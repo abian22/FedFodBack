@@ -70,9 +70,15 @@ const upload = multer({
 // }
 
 async function uploadCloudinary(filepath) {
-  return await cloudinary.uploader.upload(filepath, {
-    folder: "feedfood"
-  })
+  try {
+    const result = await cloudinary.uploader.upload(filepath, {
+      folder: "feedfood"
+    });
+    return result;
+  } catch (error) {
+    console.error("Error during Cloudinary upload:", error);
+    throw error;
+  }
 }
 
 function uploadMyVideo(req, res) {
@@ -92,8 +98,9 @@ function uploadMyVideo(req, res) {
       return res.status(401).json({ error: "User not authenticated" });
     }
 
-    if (req.files && req.files.video) {
-      const result = await uploadCloudinary(req.files.video);
+    if (req.files) {
+      const result = await uploadCloudinary(req.files.video.data, 'feedfood');
+
       console.log(result);
     }
 
