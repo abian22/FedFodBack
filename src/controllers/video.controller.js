@@ -85,7 +85,7 @@ async function uploadMyVideo(req, res) {
     });
 
     // Obtén el archivo del cuerpo de la solicitud (req.file no se utiliza aquí)
-    const fileBuffer = req.body.my_video_data;
+    const fileBuffer = req.file.buffer
 
     const b64 = Buffer.from(fileBuffer, "base64").toString("base64");
     const dataURI = "data:video/mp4;base64," + b64;
