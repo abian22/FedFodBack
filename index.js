@@ -1,4 +1,4 @@
-import fileUpload from "express-fileupload"
+
 
 const dotenv = require("dotenv").config()
 const User = require ("./src/models/user.model.js")
@@ -11,7 +11,7 @@ const passport = require('passport');
 const GoogleStrategy = require("passport-google-oauth20")
 const { google } = require('googleapis');
 const MongoStore = require("connect-mongo");
-
+const fileUpload = requie("express-fileupload")
 const drive = google.drive('v3');
 
 
