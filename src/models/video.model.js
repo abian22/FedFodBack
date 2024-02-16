@@ -8,6 +8,10 @@ const videoSchema = mongoose.Schema(
       type: ObjectId,
       ref: "User",
     },
+    cloudinaryAssetId: {
+      type: String,
+      required: true,
+    },
     description: {
       type: String,
     },

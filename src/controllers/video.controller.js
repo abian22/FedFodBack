@@ -2,6 +2,9 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs").promises;
 const Video = require("../models/video.model");
+const mime = require('mime-types');
+
+
 const cloudinary = require("cloudinary").v2;
 
 
@@ -13,14 +16,15 @@ cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET,
+  secure: true,
 });
 
 
 const storage = multer.memoryStorage({
   filename: function (req, file, cb) {
-    cb(null, file.originalname)
+    cb(null, file.originalname);
   }
-})
+});
 //{
 //   destination: function (req, file, cb) {
 //     cb(null, "/uploads")
@@ -34,7 +38,8 @@ const storage = multer.memoryStorage({
 //)
 
 const upload = multer({
-  dest: '../../uploads',  // Ajusta la carpeta de destino según tus necesidades
+  storage: storage,
+  // Otras configuraciones según tus necesidades
 });
 
 // async function uploadToDrive(fileBuffer, fileName, folderId) {
@@ -68,29 +73,42 @@ const upload = multer({
 //     throw error;
 //   }
 // }
-
-async function uploadCloudinary(filepath) {
+async function uploadCloudinary(fileBuffer, folder, originalname) {
   try {
-    const result = await cloudinary.uploader.upload(filepath, {
-      folder: "feedfood"
-    });
+    const base64String = Buffer.from(fileBuffer).toString('base64');
+    const fileExtension = path.extname(originalname).toLowerCase();
+    let resourceType = 'image';
+
+    if (['.mp4', '.webm', '.mov'].includes(fileExtension)) {
+      resourceType = 'video';
+    }
+
+    const mimeType = resourceType === 'video' ? 'video/mp4' : `image/${fileExtension.slice(1)}`;
+    const dataURI = `data:${mimeType};base64,${base64String}`;
+
+    const uploadOptions = {
+      folder: folder || "feedfood",
+      resource_type: resourceType,
+    };
+
+    const result = await cloudinary.uploader.upload(dataURI, uploadOptions);
+
     return result;
   } catch (error) {
     console.error("Error during Cloudinary upload:", error);
+    console.log("Problematic file:", originalname);
     throw error;
   }
 }
 
-function uploadMyVideo(req, res) {
 
+function uploadMyVideo(req, res) {
   upload.single("video")(req, res, async function (err) {
     if (err) {
       console.error("Error during video upload:", err);
-      return res
-        .status(500)
-        .json({ error: "Error during video upload", details: err.message });
+      return res.status(500).json({ error: "Error during video upload", details: err.message });
     }
-    console.log(req.file)
+
     const user = res.locals.user;
 
     if (!user) {
@@ -98,30 +116,30 @@ function uploadMyVideo(req, res) {
       return res.status(401).json({ error: "User not authenticated" });
     }
 
-    if (req.files) {
-      const result = await uploadCloudinary(req.files.video.data, 'feedfood');
-
+    if (req.file && req.file.buffer) {
+      const result = await uploadCloudinary(req.file.buffer, 'feedfood', req.file.originalname);
       console.log(result);
-    }
 
-    const newVideo = new Video({
-      uploadedBy: user._id,
-      description: req.body.description,
-    });
-
-    try {
-      const savedVideo = await newVideo.save();
-      console.log("Video saved", savedVideo);
-      res.send("Video uploaded");
-    } catch (error) {
-      console.error("Error saving the video:", error);
-      return res.status(500).json({
-        error: "Error saving the video",
-        details: error.message,
+      const newVideo = new Video({
+        cloudinaryAssetId: result.asset_id,
+        uploadedBy: user._id,
+        description: req.body.description,
+        videoUrl: result.secure_url
       });
+
+      try {
+        const savedVideo = await newVideo.save();
+        console.log("Video saved", savedVideo);
+        res.json({ message: "Video uploaded", video: savedVideo });
+      } catch (error) {
+        console.error("Error saving the video:", error);
+        return res.status(500).json({ error: "Error saving the video", details: error.message });
+      }
+    } else {
+      return res.status(400).json({ error: "No video file provided" });
     }
   });
-} 
+}
 
 async function uploadVideo(req, res) {
   upload.single("video")(req, res, async function (err) {

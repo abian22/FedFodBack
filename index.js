@@ -11,7 +11,7 @@ const passport = require('passport');
 const GoogleStrategy = require("passport-google-oauth20")
 const { google } = require('googleapis');
 const MongoStore = require("connect-mongo");
-const fileUpload = require("express-fileupload")
+// const fileUpload = require("express-fileupload")
 const drive = google.drive('v3');
 
 
@@ -33,10 +33,7 @@ function startExpress() {
       optionsSuccessStatus: 204,
     })
   )
-  app.use(fileUpload({
-    useTempFiles: true,
-    tempFileDir:"./uploads"
-  }))
+
 
   app.use(express.json())
   app.use("/api", require("./src/routes/index"))
