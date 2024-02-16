@@ -67,7 +67,14 @@ const upload = multer({ storage: storage })
 //   }
 // }
 
+async function uploadCloudinary(filepath) {
+  return await cloudinary.uploader.upload(filepath, {
+    folder: "feedfood"
+  })
+}
+
 function uploadMyVideo(req, res) {
+
   upload.single("video")(req, res, async function (err) {
     if (err) {
       console.error("Error during video upload:", err);
@@ -81,6 +88,10 @@ function uploadMyVideo(req, res) {
     if (!user) {
       console.error("User not authenticated");
       return res.status(401).json({ error: "User not authenticated" });
+    }
+
+    if(req.files) {
+      uploadCloudinary
     }
 
     const newVideo = new Video({
