@@ -63,11 +63,20 @@ const upload = multer({ storage: storage })
 //   }
 // }
 
-async function handleUpload(file) {
-  const res = await cloudinary.uploader.upload(file, {
-    resource_type: "auto",
-  });
-  return res;
+async function handleUpload(fileBuffer) {
+  try {
+    const b64 = fileBuffer.toString("base64");
+    const dataURI = "data:video/mp4;base64," + b64;
+    
+    const res = await cloudinary.uploader.upload(dataURI, {
+      resource_type: "video",
+    });
+    
+    return res;
+  } catch (error) {
+    console.error("Error during Cloudinary upload:", error);
+    throw error;
+  }
 }
 
 async function uploadMyVideo(req, res) {
@@ -79,34 +88,35 @@ async function uploadMyVideo(req, res) {
       return res.status(401).json({ error: "User not authenticated" });
     }
 
-    const newVideo = new Video({
-      uploadedBy: user._id,
-      description: req.body.description,
+    // Utiliza el middleware upload.single para manejar el archivo
+    upload.single("video")(req, res, async function (err) {
+      if (err) {
+        console.error("Error during video upload:", err);
+        return res
+          .status(500)
+          .json({ error: "Error during video upload", details: err.message });
+      }
+
+      const fileBuffer = req.file.buffer; // Accede al buffer del archivo
+
+      const cldRes = await handleUpload(fileBuffer);
+
+      const newVideo = new Video({
+        uploadedBy: user._id,
+        description: req.body.description,
+        videoUrl: cldRes.secure_url,  // Agrega la URL de Cloudinary al objeto del video
+      });
+
+      const savedVideo = await newVideo.save();
+      console.log("Video saved", savedVideo);
+
+      res.json({ message: "Video uploaded", video: savedVideo });
     });
-
-    // Obtén el archivo del cuerpo de la solicitud (req.file no se utiliza aquí)
-    const fileBuffer = req.file.buffer
-
-    const b64 = Buffer.from(fileBuffer, "base64").toString("base64");
-    const dataURI = "data:video/mp4;base64," + b64;
-
-    // Utiliza la función handleUpload para subir el video a Cloudinary
-    const cldRes = await handleUpload(dataURI);
-
-    // Agrega la URL de Cloudinary al objeto del video
-    newVideo.videoUrl = cldRes.secure_url;
-
-    // Guarda el video en la base de datos
-    const savedVideo = await newVideo.save();
-
-    console.log("Video saved", savedVideo);
-    res.json({ message: "Video uploaded", video: savedVideo });
   } catch (error) {
     console.error("Error during video upload:", error);
     res.status(500).json({ error: "Error during video upload", details: error.message });
   }
 }
-
 
 async function uploadVideo(req, res) {
   upload.single("video")(req, res, async function (err) {
