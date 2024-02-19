@@ -213,14 +213,16 @@ async function getVideos(req, res) {
 
 async function getMyVideos(req, res) {
   const user = res.locals.user;
+  
 
   try {
     const myVideos = await Video.find({ uploadedBy: user._id });
     if (!myVideos) {
       return res.status(404).json({ error: "You have no videos yet" });
     }
-    console.log(myVideos.videoUrl)
-    return res.status(200).json(myVideos);
+    //no sé si dejar esto asi para que me devuelva la url del archivo o pedir que me traiga toda la info del archivo
+    const myVideosUrl = (myVideos.map(video => video.videoUrl))
+    return res.status(200).json(myVideosUrl);
   } catch (error) {
     return res
       .status(500)

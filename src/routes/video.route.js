@@ -17,9 +17,9 @@ const { checkAuth, checkAdmin } = require("../middleware/auth")
 
 router.get("/", checkAuth, getVideos) //checked
 router.get("/randomVideo", checkAuth, randomVideo)
-router.get("/:userId", checkAuth, getSomeoneVideos) //checked
 router.get("/me", checkAuth, getMyVideos) //checked
 router.post("/", checkAuth, uploadMyVideo) //checked
+router.get("/:userId", checkAuth, getSomeoneVideos) //checked
 router.post("/:userId", checkAuth, checkAdmin, uploadVideo) //checked
 router.put("/:videoId", checkAuth, checkAdmin, updateVideo)
 router.put("/me/:videoId", checkAuth, updateMyVideo) //checked
