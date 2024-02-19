@@ -2,11 +2,11 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs").promises;
 const Video = require("../models/video.model");
-const mime = require('mime-types');
-
+const mime = require("mime-types");
 
 const cloudinary = require("cloudinary").v2;
 
+const publicId = "d051669357aef3f7aec0da9fa54eee"
 
 // const { google } = require('googleapis');
 // const { createReadStream } = require("streamifier");
@@ -19,11 +19,10 @@ cloudinary.config({
   secure: true,
 });
 
-
 const storage = multer.memoryStorage({
   filename: function (req, file, cb) {
     cb(null, file.originalname);
-  }
+  },
 });
 //{
 //   destination: function (req, file, cb) {
@@ -75,15 +74,18 @@ const upload = multer({
 // }
 async function uploadCloudinary(fileBuffer, folder, originalname) {
   try {
-    const base64String = Buffer.from(fileBuffer).toString('base64');
+    const base64String = Buffer.from(fileBuffer).toString("base64");
     const fileExtension = path.extname(originalname).toLowerCase();
-    let resourceType = 'image';
+    let resourceType = "image";
 
-    if (['.mp4', '.webm', '.mov'].includes(fileExtension)) {
-      resourceType = 'video';
+    if ([".mp4", ".webm", ".mov"].includes(fileExtension)) {
+      resourceType = "video";
     }
 
-    const mimeType = resourceType === 'video' ? 'video/mp4' : `image/${fileExtension.slice(1)}`;
+    const mimeType =
+      resourceType === "video"
+        ? "video/mp4"
+        : `image/${fileExtension.slice(1)}`;
     const dataURI = `data:${mimeType};base64,${base64String}`;
 
     const uploadOptions = {
@@ -101,12 +103,13 @@ async function uploadCloudinary(fileBuffer, folder, originalname) {
   }
 }
 
-
 function uploadMyVideo(req, res) {
   upload.single("video")(req, res, async function (err) {
     if (err) {
       console.error("Error during video upload:", err);
-      return res.status(500).json({ error: "Error during video upload", details: err.message });
+      return res
+        .status(500)
+        .json({ error: "Error during video upload", details: err.message });
     }
 
     const user = res.locals.user;
@@ -117,14 +120,18 @@ function uploadMyVideo(req, res) {
     }
 
     if (req.file && req.file.buffer) {
-      const result = await uploadCloudinary(req.file.buffer, 'feedfood', req.file.originalname);
+      const result = await uploadCloudinary(
+        req.file.buffer,
+        "feedfood",
+        req.file.originalname
+      );
       console.log(result);
 
       const newVideo = new Video({
         cloudinaryAssetId: result.asset_id,
         uploadedBy: user._id,
         description: req.body.description,
-        videoUrl: result.secure_url
+        videoUrl: result.secure_url,
       });
 
       try {
@@ -133,7 +140,9 @@ function uploadMyVideo(req, res) {
         res.json({ message: "Video uploaded", video: savedVideo });
       } catch (error) {
         console.error("Error saving the video:", error);
-        return res.status(500).json({ error: "Error saving the video", details: error.message });
+        return res
+          .status(500)
+          .json({ error: "Error saving the video", details: error.message });
       }
     } else {
       return res.status(400).json({ error: "No video file provided" });
@@ -150,31 +159,40 @@ async function uploadVideo(req, res) {
         .json({ error: "Error during video upload", details: err.message });
     }
 
- 
     const user = res.locals.user;
 
     if (!user) {
       console.error("User not authenticated");
       return res.status(401).json({ error: "User not authenticated" });
     }
+    if (req.file && req.file.buffer) {
+      const result = await uploadCloudinary(
+        req.file.buffer,
+        "feedfood",
+        req.file.originalname
+      );
+      console.log(result);
 
-    const userId = req.params.userId;
+      const userId = req.params.userId;
 
-    const newVideo = new Video({
-      uploadedBy: userId,
-      description: req.body.description,
-    });
-
-    try {
-      const savedVideo = await newVideo.save();
-      console.log("Video saved", savedVideo);
-      res.send("Video uploaded");
-    } catch (error) {
-      console.error("Error saving the video:", error);
-      return res.status(500).json({
-        error: "Error saving the video",
-        details: error.message,
+      const newVideo = new Video({
+        uploadedBy: userId,
+        cloudinaryAssetId: result.asset_id,
+        description: req.body.description,
+        videoUrl: result.secure_url
       });
+
+      try {
+        const savedVideo = await newVideo.save();
+        console.log("Video saved", savedVideo);
+        res.send("Video uploaded");
+      } catch (error) {
+        console.error("Error saving the video:", error);
+        return res.status(500).json({
+          error: "Error saving the video",
+          details: error.message,
+        });
+      }
     }
   });
 }
@@ -201,6 +219,7 @@ async function getMyVideos(req, res) {
     if (!myVideos) {
       return res.status(404).json({ error: "You have no videos yet" });
     }
+    console.log(myVideos.videoUrl)
     return res.status(200).json(myVideos);
   } catch (error) {
     return res
@@ -359,13 +378,13 @@ async function updateVideo(req, res) {
   }
 }
 
-let randomVideoList = []; 
+let randomVideoList = [];
 
 async function initializeVideoList() {
   try {
     const allVideos = await Video.find();
-    if(!allVideos) {
-      console.log("There are no videos")
+    if (!allVideos) {
+      console.log("There are no videos");
     }
     randomVideoList = randomVideoListArray(allVideos);
 
@@ -383,7 +402,11 @@ async function randomVideo(req, res) {
   try {
     if (randomVideoList.length === 0) {
       initializeVideoList();
-      return res.status(404).send("You have already seen all the videos. We are generating a new set.");
+      return res
+        .status(404)
+        .send(
+          "You have already seen all the videos. We are generating a new set."
+        );
     }
     const nextVideo = randomVideoList.pop();
     return res.status(200).json(nextVideo);
@@ -393,9 +416,6 @@ async function randomVideo(req, res) {
 }
 
 initializeVideoList();
-
-
-
 
 module.exports = {
   uploadMyVideo,
@@ -408,6 +428,5 @@ module.exports = {
   deleteAll,
   updateMyVideo,
   updateVideo,
-  randomVideo
-  
+  randomVideo,
 };

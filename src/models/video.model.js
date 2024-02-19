@@ -15,6 +15,10 @@ const videoSchema = mongoose.Schema(
     description: {
       type: String,
     },
+    videoUrl: {
+      type:String,
+      required:true
+    },
     likes: {
       type: Number,
       default: 0,
