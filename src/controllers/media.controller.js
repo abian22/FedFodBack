@@ -22,10 +22,14 @@ const upload = multer({
 
 async function uploadCloudinary(fileBuffer, folder, originalname) {
   try {
+    //Convert the file buffer to a base64 string.
     const base64String = Buffer.from(fileBuffer).toString("base64");
+
+    //Get the extension of the original file.
     const fileExtension = path.extname(originalname).toLowerCase();
     let resourceType = "image";
 
+    //If the extension is among those of video files, change the resource type to "video"
     if ([".mp4", ".webm", ".mov"].includes(fileExtension)) {
       resourceType = "video";
     }
@@ -36,6 +40,7 @@ async function uploadCloudinary(fileBuffer, folder, originalname) {
         : `image/${fileExtension.slice(1)}`;
     const dataURI = `data:${mimeType};base64,${base64String}`;
 
+    //Set up upload options for Cloudinary.
     const uploadOptions = {
       folder: folder || "feedfood",
       resource_type: resourceType,
@@ -113,6 +118,9 @@ async function uploadMedia(req, res) {
       console.error("User not authenticated");
       return res.status(401).json({ error: "User not authenticated" });
     }
+
+    //Check if a file is provided, if it contains a data buffer,
+    //and call the function to upload to Cloudinary.
     if (req.file && req.file.buffer) {
       const result = await uploadCloudinary(
         req.file.buffer,
@@ -200,10 +208,13 @@ async function deleteMyMedia(req, res) {
       return res.status(404).json({ error: "Media not found" });
     }
 
+    // Check if there is no authenticated user or if the authenticated user is not the owner of the media
     if (!user || String(medias.uploadedBy) !== String(user._id)) {
       return res.stats(403).json({ error: "You cant delete that media" });
     }
 
+    //Split the media URL into parts using "/" and extract the last part
+    //Which contains the media url to be deleted
     const url = medias.mediaUrl.split("/");
     const urlMedia = url[url.length - 1];
     const [publicId] = urlMedia.split(".");
@@ -328,24 +339,27 @@ async function updateMedia(req, res) {
 
 let randomMediaList = [];
 
-async function initializeMediaList() {
-  try {
-    const allMedias = await Media.find();
-    if (!allMedias) {
-      console.log("There are no medias");
-    }
-    randomMediaList = randomMediaListArray(allMedias);
-
-    console.log("Media list initialized and randomized.");
-  } catch (error) {
-    console.error("Error initializing the media list:", error.message);
-  }
-}
-
 function randomMediaListArray(array) {
   return array.sort(() => Math.random() - 0.5);
 }
 
+async function initializeMediaList() {
+  try {
+    const allMedias = await Media.find();
+    if (allMedias.length === 0) {
+      console.log("There are no medias");
+    } else {
+      randomMediaList = randomMediaListArray(allMedias);
+
+      console.log("Media list initialized and randomized.", randomMediaList);
+      //not sure about this return
+      return randomMediaList;
+    }
+  } catch (error) {
+    console.error("Error initializing the media list:", error.message);
+  }
+}
+//need to check this function when the front is ready
 async function randomMedia(req, res) {
   try {
     if (randomMediaList.length === 0) {
