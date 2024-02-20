@@ -1,5 +1,5 @@
 const User = require("../models/user.model");
-const Video = require("../models/video.model");
+const Media = require("../models/media.model");
 const Comment = require("../models/comment.model");
 
 async function getComments(req, res) {
@@ -15,13 +15,13 @@ async function getComments(req, res) {
   }
 }
 
-async function getCommentsOfVideo(req, res) {
+async function getCommentsOfMedia(req, res) {
   try {
-    const video = await Video.findById(req.params.videoId);
-    if (!video) {
-      return res.status(404).send("No comments of video found");
+    const media = await Media.findById(req.params.mediaId);
+    if (!media) {
+      return res.status(404).send("No comments of media found");
     } else {
-      return res.status(200).json(video.comments);
+      return res.status(200).json(media.comments);
     }
   } catch (error) {
     res.status(500).send(error.message);
@@ -31,18 +31,18 @@ async function getCommentsOfVideo(req, res) {
 async function postMyComment(req, res) {
   try {
     const user = await User.findById(res.locals.user.id);
-    const video = await Video.findById(req.params.videoId);
+    const media = await Media.findById(req.params.mediaId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
-    if (!video) {
-      return res.status(404).json({ message: "Video not found." });
+    if (!media) {
+      return res.status(404).json({ message: "Media not found." });
     }
 
     const newComment = await Comment.create({
       text: req.body.text,
-      commentedVideo: video._id,
+      commentedMedia: media._id,
       commentedBy: user._id,
     });
     const savedComment = await newComment.save();
@@ -70,14 +70,12 @@ async function deleteMyComment(req, res) {
       return res.status(404).json({ message: "Comment not found" });
     }
 
-    // Verify if the current user is the author of the comment
     if (commentToDelete.commentedBy.toString() !== userId) {
       return res
         .status(403)
         .json({ message: "Unauthorized: User cannot delete this comment" });
     }
 
-    // If the user is the author, proceed to delete the comment
     await Comment.deleteOne({ _id: commentIdToDelete });
     res.status(200).json({ message: "Comment deleted successfully" });
   } catch (error) {
@@ -115,16 +113,13 @@ async function updateMyComment(req, res) {
     if (!commentIdToUpdate) {
       return res.status(404).json({ message: "Comment not found" });
     }
-    // Find the comment by its ID
     const commentToUpdate = await Comment.findById(commentIdToUpdate);
 
-    // Verify if the current user is the author of the comment
     if (commentToUpdate.commentedBy.toString() !== userId) {
       return res
         .status(403)
         .json({ message: "Unauthorized: User cannot delete this comment" });
     }
-    //updating and saving the comment
     await Comment.updateOne(
       { _id: commentIdToUpdate },
       { $set: { text: req.body.text } }
@@ -162,7 +157,7 @@ async function updateComment(req, res) {
 module.exports = {
   postMyComment,
   getComments,
-  getCommentsOfVideo,
+  getCommentsOfMedia,
   deleteMyComment,
   deleteComment,
   updateMyComment,

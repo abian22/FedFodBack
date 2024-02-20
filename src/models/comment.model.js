@@ -7,9 +7,9 @@ const commentSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    commentedVideo: {
+    commentedMedia: {
       type: ObjectId,
-      ref:"Video"
+      ref:"Media"
     },
     commentedBy: {
       type: ObjectId,

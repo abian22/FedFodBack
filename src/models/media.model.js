@@ -3,7 +3,7 @@ const { ObjectId } = mongoose.Schema
 const commentSchema = require("./comment.model")
 
 
-const videoSchema = mongoose.Schema(
+const mediaSchema = mongoose.Schema(
   {
     uploadedBy: {
       type: ObjectId,
@@ -16,7 +16,7 @@ const videoSchema = mongoose.Schema(
     description: {
       type: String,
     },
-    videoUrl: {
+    mediaUrl: {
       type:String,
       required:true
     },
@@ -38,4 +38,4 @@ const videoSchema = mongoose.Schema(
   { timestamps: true,}
 )
 
-module.exports = mongoose.model("Video", videoSchema)
+module.exports = mongoose.model("Media", mediaSchema)
