@@ -1,3 +1,5 @@
+//*****  Check the function of comment media when the front is ready ******/
+
 const User = require("../models/user.model");
 const Media = require("../models/media.model");
 const Comment = require("../models/comment.model");
