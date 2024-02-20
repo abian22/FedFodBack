@@ -1,16 +1,7 @@
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs").promises;
 const Video = require("../models/video.model");
-const mime = require("mime-types");
-
 const cloudinary = require("cloudinary").v2;
-
-const publicId = "d051669357aef3f7aec0da9fa54eee"
-
-// const { google } = require('googleapis');
-// const { createReadStream } = require("streamifier");
-// const storage = multer.memoryStorage();
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -24,54 +15,11 @@ const storage = multer.memoryStorage({
     cb(null, file.originalname);
   },
 });
-//{
-//   destination: function (req, file, cb) {
-//     cb(null, "/uploads")
-//   },
-//   filename: function (req, file, cb) {
-//      const extension = path.extname(file.originalname)
-//      const uniqueName = `${Date.now()}${extension}`
-//     cb(null, "")
-//   },
-// }
-//)
 
 const upload = multer({
   storage: storage,
-  // Otras configuraciones según tus necesidades
 });
 
-// async function uploadToDrive(fileBuffer, fileName, folderId) {
-//   const auth = new google.auth.GoogleAuth({
-//     keyFile: 'feedFoodDrive.json',
-//     scopes: 'https://www.googleapis.com/auth/drive.file',
-//   });
-
-//   const drive = google.drive({ version: 'v3', auth });
-
-//   const fileMetadata = {
-//     parents: "https://drive.google.com/drive/folders/1lHANt1BrR4fXgCVcKy-IuJksccYZ906_",
-//   };
-
-//   const media = {
-//     mimeType: 'application/octet-stream',
-//     body: createReadStream(fileBuffer)
-//   };
-
-//   try {
-//     const response = await drive.files.create({
-//       resource: fileMetadata,
-//       media: media,
-//       fields: 'id',
-//     });
-//     console.log(response)
-//     console.log('File uploaded to Google Drive. File ID:', response.data.id);
-//     return response.data.id;
-//   } catch (error) {
-//     console.error('Error uploading file to Google Drive:', error.message);
-//     throw error;
-//   }
-// }
 async function uploadCloudinary(fileBuffer, folder, originalname) {
   try {
     const base64String = Buffer.from(fileBuffer).toString("base64");
@@ -179,7 +127,7 @@ async function uploadVideo(req, res) {
         uploadedBy: userId,
         cloudinaryAssetId: result.asset_id,
         description: req.body.description,
-        videoUrl: result.secure_url
+        videoUrl: result.secure_url,
       });
 
       try {
@@ -213,16 +161,13 @@ async function getVideos(req, res) {
 
 async function getMyVideos(req, res) {
   const user = res.locals.user;
-  
 
   try {
     const myVideos = await Video.find({ uploadedBy: user._id });
     if (!myVideos) {
       return res.status(404).json({ error: "You have no videos yet" });
     }
-    //no sé si dejar esto asi para que me devuelva la url del archivo o pedir que me traiga toda la info del archivo
-    const myVideosUrl = (myVideos.map(video => video.videoUrl))
-    return res.status(200).json(myVideosUrl);
+    return res.status(200).json(myVideos);
   } catch (error) {
     return res
       .status(500)
@@ -259,13 +204,11 @@ async function deleteMyVideo(req, res) {
       return res.stats(403).json({ error: "You cant delete that video" });
     }
 
-    if (videos.filePath) {
-      try {
-        await fs.unlink(videos.filePath);
-      } catch (unlinkError) {
-        console.error("Error deleting file:", unlinkError);
-      }
-    }
+    const url = videos.videoUrl.split("/");
+    const urlVideo = url[url.length - 1];
+    const [publicId] = urlVideo.split(".");
+    await cloudinary.uploader.destroy(`feedfood/${publicId}`);
+
     await videos.deleteOne({ _id: videos._id });
     console.log("video deleted");
     res.json({ message: "video deleted" });
@@ -285,13 +228,11 @@ async function deleteVideo(req, res) {
     if (!videos) {
       return res.status(404).json({ error: "Video not found" });
     }
-    if (videos.filePath) {
-      try {
-        await fs.unlink(videos.filePath);
-      } catch (unlinkError) {
-        console.error("Error deleting file:", unlinkError);
-      }
-    }
+    const url = videos.videoUrl.split("/");
+    const urlVideo = url[url.length - 1];
+    const [publicId] = urlVideo.split(".");
+    await cloudinary.uploader.destroy(`feedfood/${publicId}`);
+
     await videos.deleteOne({ _id: videos._id });
     console.log("Video deleted");
     res.json({ message: "Video deleted" });
@@ -311,15 +252,18 @@ async function deleteAll(req, res) {
       return res.status(404).json({ error: "There are no videos" });
     }
     for (const video of videos) {
-      if (video.filePath) {
-        try {
-          await fs.unlink(video.filePath);
-        } catch (unlinkError) {
-          console.error("Error deleting file:", unlinkError);
-        }
-      }
       await video.deleteOne();
     }
+
+    const videoUrls = videos.map((video) => video.videoUrl);
+    console.log(videoUrls);
+    for (const video of videoUrls) {
+      const url = video.split("/");
+      const urlVideo = url[url.length - 1];
+      const [publicId] = urlVideo.split(".");
+      await cloudinary.uploader.destroy(`feedfood/${publicId}`);
+    }
+
     res.json("All videos deleted");
   } catch (error) {
     console.error("Error deleting videos", error);
