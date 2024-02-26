@@ -26,7 +26,9 @@ function startExpress() {
     }),
   }));
   app.use(passport.initialize());
-  app.use(cors())
+  app.use(cors({
+    origin: "https://feedfoodback.onrender.com",
+  }))
   // app.use(
   //   cors({
   //     origin: "http://feedfoodback.onrender.com",
