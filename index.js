@@ -27,7 +27,7 @@ function startExpress() {
   }));
   app.use(passport.initialize());
   app.use(cors({
-    origin: ["http://localhost", "http://feedfoodback.onrender.com"],
+    origin: ["http://localhost5173", "http://feedfoodback.onrender.com"],
     methods: ["GET", "POST", "PUT", "DELETE"],
   }))
   // app.use(
