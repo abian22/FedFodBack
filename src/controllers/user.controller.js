@@ -129,6 +129,23 @@ async function deleteMe(req, res) {
   }
 }
 
+async function deleteAllUsers(req, res) {
+  try {
+    User.deleteMany({}, (err, result) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log(result); 
+      }
+    });
+    
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Delete all users failed" + error.message });
+  }
+}
+
 module.exports = {
   getAllUsers,
   getMe,
@@ -138,4 +155,5 @@ module.exports = {
   updateMe,
   deleteUser,
   deleteMe,
+  deleteAllUsers
 };

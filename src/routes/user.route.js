@@ -7,7 +7,8 @@ const {
   updateUser,
   updateMe,
   deleteUser,
-  deleteMe
+  deleteMe,
+  deleteAllUsers
 } = require("../controllers/user.controller")
 
 const { checkAuth, checkAdmin } = require("../middleware/auth")
@@ -23,6 +24,7 @@ router.post("/login", login) //checked
 router.put("/me", checkAuth, updateMe) //checked
 router.put("/:id", checkAuth, checkAdmin, updateUser) //checked
 router.delete("/me", checkAuth, deleteMe) //checked
+router.delete("/all", checkAuth, checkAdmin, deleteAllUsers)
 router.delete("/:id", checkAuth, checkAdmin, deleteUser) //checked
 
 
