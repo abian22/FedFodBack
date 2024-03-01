@@ -352,7 +352,6 @@ async function initializeMediaList() {
       randomMediaList = randomMediaListArray(allMedias);
 
       console.log("Media list initialized and randomized.", randomMediaList);
-      //not sure about this return
       return randomMediaList;
     }
   } catch (error) {

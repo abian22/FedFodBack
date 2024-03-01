@@ -27,11 +27,11 @@ function startExpress() {
   app.use(passport.initialize());
   app.use(
     cors({
-      origin: ["http://feedfoodback.onrender.com","http://localhost:5173"],
+      origin: ["http://feedfoodback.onrender.com", "http://localhost:5173"],
       methods: ["GET", "POST", "PUT", "DELETE"],
-      optionsSuccessStatus: 204, // Para las solicitudes OPTIONS
-      credentials: true, // Si estás manejando cookies o credenciales
-      allowedHeaders: "Content-Type,Authorization", // Encabezados permitidos
+      // optionsSuccessStatus: 204, 
+      // credentials: true, 
+      allowedHeaders: ["Content-Type", "token"],
     })
   );
   // app.use(
