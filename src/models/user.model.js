@@ -32,7 +32,7 @@ const userSchema = mongoose.Schema({
   },
   profileImg: {
     type: String,
-    default: "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg"
+    default: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
   },
   role: {
     type: String,
