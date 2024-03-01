@@ -20,7 +20,7 @@ async function getAllUsers(req, res) {
 async function getMe(req, res) {
   try {
     const user = await User.findById(res.locals.user.id);
-    console.log(user)
+    console.log(user);
     if (!user) {
       return res.statsu(404).send("No user found");
     }
@@ -131,18 +131,10 @@ async function deleteMe(req, res) {
 
 async function deleteAllUsers(req, res) {
   try {
-    User.deleteMany({}, (err, result) => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log(result); 
-      }
-    });
-    
+    const result = await User.deleteMany({});
+    console.log("All users deleted:", result);
   } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Delete all users failed" + error.message });
+    console.error("Error deleting users:", error);
   }
 }
 
@@ -155,5 +147,5 @@ module.exports = {
   updateMe,
   deleteUser,
   deleteMe,
-  deleteAllUsers
+  deleteAllUsers,
 };
