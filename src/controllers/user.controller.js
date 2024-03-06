@@ -80,6 +80,11 @@ async function updateUser(req, res) {
 
 async function updateMe(req, res) {
   try {
+    const existingUser = await User.findOne({ email: req.body.email });
+    
+    if (existingUser && existingUser._id.toString() !== res.locals.user.id) {
+      return res.status(400).json({ error: "Email already in use" });
+    }
     if (req.body.password) {
       req.body.password = bcrypt.hashSync(req.body.password, 10);
     }

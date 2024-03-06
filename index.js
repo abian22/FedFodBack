@@ -27,10 +27,14 @@ function startExpress() {
   app.use(passport.initialize());
   app.use(
     cors({
-      origin: ["http://feedfoodback.onrender.com", "http://localhost:5173", "https://lighthearted-muffin-287c32.netlify.app"],
+      origin: [
+        "http://feedfoodback.onrender.com",
+        "http://localhost:5173",
+        "https://lighthearted-muffin-287c32.netlify.app",
+      ],
       methods: ["GET", "POST", "PUT", "DELETE"],
-      // optionsSuccessStatus: 204, 
-      // credentials: true, 
+      // optionsSuccessStatus: 204,
+      // credentials: true,
       allowedHeaders: ["Content-Type", "token"],
     })
   );
