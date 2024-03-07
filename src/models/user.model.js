@@ -32,7 +32,7 @@ const userSchema = mongoose.Schema({
   },
   profileImg: {
     type: String,
-    default: "https://res.cloudinary.com/dimdftrtr/image/upload/d3b5b1811868617a1d266515e0f71b68"
+    default: "https://res.cloudinary.com/dimdftrtr/image/upload/v1709810063/profileImg/ozpoalh7vv93fe7sq2zm.webp"
   },
   role: {
     type: String,
