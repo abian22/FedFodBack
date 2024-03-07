@@ -74,7 +74,7 @@ function uploadProfileImg(req, res) {
 
     // Check if the file is an image
     if (req.file && req.file.buffer) {
-      const allowedImageExtensions = [".jpg", ".jpeg", ".png"];
+      const allowedImageExtensions = [".jpg", ".jpeg", ".png", "jfif"];
       const fileExtension = path.extname(req.file.originalname).toLowerCase();
 
       if (!allowedImageExtensions.includes(fileExtension)) {

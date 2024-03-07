@@ -21,7 +21,7 @@ router.get("/randomMedia", checkAuth, randomMedia) //checked
 router.get("/me", checkAuth, getMyMedias) //checked
 router.get("/:userId", checkAuth, getSomeoneMedias) //checked
 router.post("/", checkAuth, uploadMyMedia) //checked
-router.post("/profileImg", checkAuth, uploadProfileImg) 
+router.post("/profileImg", checkAuth, uploadProfileImg) //checked
 router.post("/:userId", checkAuth, checkAdmin, uploadMedia) //checked
 router.put("/me/:mediaId", checkAuth, updateMyMedia) //checked
 router.put("/:mediaId", checkAuth, checkAdmin, updateMedia)
