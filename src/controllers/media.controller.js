@@ -56,6 +56,65 @@ async function uploadCloudinary(fileBuffer, folder, originalname) {
   }
 }
 
+function uploadProfileImg(req, res) {
+  upload.single("media")(req, res, async function (err) {
+    if (err) {
+      console.error("Error during media upload:", err);
+      return res
+        .status(500)
+        .json({ error: "Error during media upload", details: err.message });
+    }
+
+    const user = res.locals.user;
+
+    if (!user) {
+      console.error("User not authenticated");
+      return res.status(401).json({ error: "User not authenticated" });
+    }
+
+    // Check if the file is an image
+    if (req.file && req.file.buffer) {
+      const allowedImageExtensions = [".jpg", ".jpeg", ".png"];
+      const fileExtension = path.extname(req.file.originalname).toLowerCase();
+
+      if (!allowedImageExtensions.includes(fileExtension)) {
+        return res.status(400).json({ error: "Invalid image file format" });
+      }
+
+      const result = await uploadCloudinary(
+        req.file.buffer,
+        "profileImg",
+        req.file.originalname
+      );
+
+      user.profileImg = result.secure_url;
+
+      const newMedia = new Media({
+        cloudinaryAssetId: result.asset_id,
+        uploadedBy: user._id,
+        mediaUrl: result.secure_url,
+      });
+
+      try {
+        const savedMedia = await newMedia.save();
+        console.log("Media saved", savedMedia);
+        
+        // Guardar la información actualizada del usuario con la nueva imagen
+        await user.save();
+
+        return res.json({ message: "Image uploaded", image: savedMedia });
+      } catch (error) {
+        console.error("Error saving the image:", error);
+        return res
+          .status(500)
+          .json({ error: "Error saving the image", details: error.message });
+      }
+    } else {
+      return res.status(400).json({ error: "No image file provided" });
+    }
+  });
+}
+
 function uploadMyMedia(req, res) {
   upload.single("media")(req, res, async function (err) {
     if (err) {
@@ -390,4 +449,5 @@ module.exports = {
   updateMyMedia,
   updateMedia,
   randomMedia,
+  uploadProfileImg
 };
