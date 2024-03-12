@@ -425,8 +425,6 @@ async function randomMedia() {
   }
 }
 
-randomMedia();
-
 module.exports = {
   uploadMyMedia,
   deleteMyMedia,
