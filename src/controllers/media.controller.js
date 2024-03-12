@@ -397,9 +397,9 @@ async function updateMedia(req, res) {
   }
 }
 
-let randomMediaArray = [];
 
 async function randomMedia() {
+  let randomMediaArray = [];
   try {
     const allMedias = await Media.find();
     
