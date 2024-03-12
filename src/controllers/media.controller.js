@@ -1,6 +1,7 @@
 const multer = require("multer");
 const path = require("path");
 const Media = require("../models/media.model");
+const User = require ("../models/user.model")
 const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
@@ -396,46 +397,35 @@ async function updateMedia(req, res) {
   }
 }
 
-let randomMediaList = [];
+let randomMediaArray = [];
 
-function randomMediaListArray(array) {
-  return array.sort(() => Math.random() - 0.5);
-}
-
-async function initializeMediaList() {
+async function randomMedia() {
   try {
     const allMedias = await Media.find();
+    
     if (allMedias.length === 0) {
-      console.log("There are no medias");
-    } else {
-      randomMediaList = randomMediaListArray(allMedias);
+      console.log("There are no media files.");
+      return [];
+    }
 
-      console.log("Media list initialized and randomized.", randomMediaList);
-      return randomMediaList;
-    }
+    const mediaWithUserData = await Promise.all(
+      allMedias.map(async (media) => {
+        const user = await User.findById(media.uploadedBy);
+        return { media, user };
+      })
+    );
+
+    randomMediaArray = mediaWithUserData.sort(() => Math.random() - 0.5);
+
+    console.log("Random media generated", randomMediaArray);
+    return randomMediaArray;
   } catch (error) {
-    console.error("Error initializing the media list:", error.message);
-  }
-}
-//need to check this function when the front is ready
-async function randomMedia(req, res) {
-  try {
-    if (randomMediaList.length === 0) {
-      initializeMediaList();
-      return res
-        .status(404)
-        .send(
-          "You have already seen all the medias. We are generating a new set."
-        );
-    }
-    const nextMedia = randomMediaList.pop();
-    return res.status(200).json(nextMedia);
-  } catch (error) {
-    return res.status(500).send(error.message);
+    console.error("Error fetching the random media list:", error.message);
+    return [];
   }
 }
 
-initializeMediaList();
+randomMedia();
 
 module.exports = {
   uploadMyMedia,

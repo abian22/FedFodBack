@@ -20,7 +20,6 @@ async function getAllUsers(req, res) {
 async function getMe(req, res) {
   try {
     const user = await User.findById(res.locals.user.id);
-    console.log(user);
     if (!user) {
       return res.statsu(404).send("No user found");
     }
