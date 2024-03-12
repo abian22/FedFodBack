@@ -402,14 +402,17 @@ async function randomMedia() {
   let randomMediaArray = [];
   try {
     const allMedias = await Media.find();
-    
+
     if (allMedias.length === 0) {
       console.log("There are no media files.");
       return [];
     }
 
+    // Limitar la cantidad de elementos a devolver
+    const limitedMedia = allMedias.slice(0, 10); // Cambia 10 por el número deseado
+
     const mediaWithUserData = await Promise.all(
-      allMedias.map(async (media) => {
+      limitedMedia.map(async (media) => {
         const user = await User.findById(media.uploadedBy);
         return { media, user };
       })

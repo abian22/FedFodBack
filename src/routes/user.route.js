@@ -17,7 +17,7 @@ const { login, signUp } = require("../controllers/auth.controller")
 
 router.get("/", checkAuth, checkAdmin, getAllUsers) //checked
 router.get("/me", checkAuth, getMe) //checked
-router.get("/:username", checkAuth, getOneUser) //checked
+router.get("/:identifier", checkAuth, getOneUser) //checked
 router.post("/", checkAuth, checkAdmin, createUser) //checked
 router.post("/signUp", signUp) //checked
 router.post("/login", login) //checked

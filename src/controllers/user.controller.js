@@ -31,19 +31,30 @@ async function getMe(req, res) {
   }
 }
 
-async function getOneUser(req, res) {
+const getOneUser = async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.params.username });
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
+    const identifier = req.params.identifier;
+
+    const isObjectId = /^[0-9a-fA-F]{24}$/.test(identifier);
+
+    let user;
+
+    if (isObjectId) {
+      user = await User.findById(identifier);
+    } else {
+      user = await User.findOne({ username: identifier });
     }
-    return res.status(200).json({ user: user });
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.status(200).json({ user });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Error finding user: " + error.message });
+    console.error("Error al obtener el usuario:", error);
+    res.status(500).json({ message: "Error del servidor" });
   }
-}
+};
 
 async function createUser(req, res) {
   try {
