@@ -2,6 +2,7 @@ const router = require("express").Router()
 const {
   createUser,
   getAllUsers,
+  searchUsers,
   getMe,
   getOneUser,
   updateUser,
@@ -17,6 +18,7 @@ const { login, signUp } = require("../controllers/auth.controller")
 
 router.get("/", checkAuth, checkAdmin, getAllUsers) //checked
 router.get("/me", checkAuth, getMe) //checked
+router.get("/search", checkAuth, searchUsers) //checked
 router.get("/:identifier", checkAuth, getOneUser) //checked
 router.post("/", checkAuth, checkAdmin, createUser) //checked
 router.post("/signUp", signUp) //checked

@@ -17,6 +17,26 @@ async function getAllUsers(req, res) {
   }
 }
 
+async function searchUsers(req, res) {
+  try {
+    const regex = new RegExp(req.body.username, "i");
+    const users = await User.find(
+      { username: regex },
+      { username: 1, profileImg: 1 }
+    );
+
+    if (!users || users.length === 0) {
+      return res.status(404).send("No users found");
+    } else {
+      return res.status(200).json(users);
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Error searching users: " + error.message });
+  }
+}
+
 async function getMe(req, res) {
   try {
     const user = await User.findById(res.locals.user.id);
@@ -91,7 +111,7 @@ async function updateUser(req, res) {
 async function updateMe(req, res) {
   try {
     const existingUser = await User.findOne({ email: req.body.email });
-    
+
     if (existingUser && existingUser._id.toString() !== res.locals.user.id) {
       return res.status(400).json({ error: "Email already in use" });
     }
@@ -155,6 +175,7 @@ async function deleteAllUsers(req, res) {
 
 module.exports = {
   getAllUsers,
+  searchUsers,
   getMe,
   getOneUser,
   createUser,

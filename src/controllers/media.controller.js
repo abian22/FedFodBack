@@ -1,7 +1,7 @@
 const multer = require("multer");
 const path = require("path");
 const Media = require("../models/media.model");
-const User = require ("../models/user.model")
+const User = require("../models/user.model");
 const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
@@ -99,7 +99,7 @@ function uploadProfileImg(req, res) {
       try {
         const savedMedia = await newMedia.save();
         console.log("Media saved", savedMedia);
-        
+
         // Guardar la información actualizada del usuario con la nueva imagen
         await user.save();
 
@@ -397,36 +397,35 @@ async function updateMedia(req, res) {
   }
 }
 
+// async function randomMedia() {
+//   let randomMediaArray = [];
+//   try {
+//     const allMedias = await Media.find();
 
-async function randomMedia() {
-  let randomMediaArray = [];
-  try {
-    const allMedias = await Media.find();
+//     if (allMedias.length === 0) {
+//       console.log("There are no media files.");
+//       return [];
+//     }
 
-    if (allMedias.length === 0) {
-      console.log("There are no media files.");
-      return [];
-    }
+//     // Limitar la cantidad de elementos a devolver
+//     const limitedMedia = allMedias.slice(0, 10); // Cambia 10 por el número deseado
 
-    // Limitar la cantidad de elementos a devolver
-    const limitedMedia = allMedias.slice(0, 10); // Cambia 10 por el número deseado
+//     const mediaWithUserData = await Promise.all(
+//       limitedMedia.map(async (media) => {
+//         const user = await User.findById(media.uploadedBy);
+//         return { media, user };
+//       })
+//     );
 
-    const mediaWithUserData = await Promise.all(
-      limitedMedia.map(async (media) => {
-        const user = await User.findById(media.uploadedBy);
-        return { media, user };
-      })
-    );
+//     randomMediaArray = mediaWithUserData.sort(() => Math.random() - 0.5);
 
-    randomMediaArray = mediaWithUserData.sort(() => Math.random() - 0.5);
-
-    console.log("Random media generated", randomMediaArray);
-    return randomMediaArray;
-  } catch (error) {
-    console.error("Error fetching the random media list:", error.message);
-    return [];
-  }
-}
+//     console.log("Random media generated", randomMediaArray);
+//     return randomMediaArray;
+//   } catch (error) {
+//     console.error("Error fetching the random media list:", error.message);
+//     return [];
+//   }
+// }
 
 module.exports = {
   uploadMyMedia,
@@ -439,6 +438,6 @@ module.exports = {
   deleteAll,
   updateMyMedia,
   updateMedia,
-  randomMedia,
-  uploadProfileImg
+  // randomMedia,
+  uploadProfileImg,
 };
