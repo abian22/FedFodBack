@@ -384,7 +384,7 @@ async function updateLikes(req, res) {
     const media = await Media.findById(mediaId);
 
     if (!media) {
-      return res.status(404).json({ message: 'media not found' });
+      return res.status(404).json({ message: 'Media not found' });
     }
 
     const index = media.likedBy.indexOf(userId);
@@ -396,9 +396,15 @@ async function updateLikes(req, res) {
       // El usuario ya ha dado like, eliminarlo del array
       media.likedBy.splice(index, 1);
     }
-    console.log(media)
+
+    // Guardar los cambios en el estado de likes del video
     await media.save();
-    res.status(200).json({ message: 'Like updated successfully' });
+
+    // Consultar la lista actualizada de usuarios que han dado like en el video
+    const updatedMedia = await Media.findById(mediaId).populate('likedBy', 'username'); // Suponiendo que los usuarios tienen un campo 'username'
+
+    // Devolver la lista actualizada de usuarios que han dado like en el video
+    res.status(200).json({ message: 'Like updated successfully', likes: updatedMedia.likedBy });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal server error' });
