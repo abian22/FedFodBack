@@ -376,25 +376,35 @@ async function updateMyMedia(req, res) {
   }
 }
 
-async function handleLikes(mediaId, userId) {
+async function updateLikes(req, res) {
+  const { mediaId } = req.params;
+  const userId = res.locals.user.id; 
+
   try {
     const media = await Media.findById(mediaId);
+
     if (!media) {
-      throw new Error('No se encontró el medio.');
+      return res.status(404).json({ message: 'media not found' });
     }
 
-    const index = media.likes.indexOf(userId);
+    const index = media.likedBy.indexOf(userId);
+
     if (index === -1) {
-      media.likes.push(userId);
+      // El usuario no ha dado like, añadirlo al array
+      media.likedBy.push(userId);
     } else {
-      media.likes.splice(index, 1);
+      // El usuario ya ha dado like, eliminarlo del array
+      media.likedBy.splice(index, 1);
     }
+
     await media.save();
-    return media;
-  } catch (error) {
-    throw error;
+    res.status(200).json({ message: 'Like updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
+
 
 async function updateMedia(req, res) {
   try {
@@ -460,5 +470,5 @@ module.exports = {
   updateMedia,
   // randomMedia,
   uploadProfileImg,
-  handleLikes
+  updateLikes
 };
