@@ -11,7 +11,8 @@ const {
   updateMyMedia,
   updateMedia,
   // randomMedia,
-  uploadProfileImg
+  uploadProfileImg,
+  handleLikes
 } = require("../controllers/media.controller")
 
 const { checkAuth, checkAdmin } = require("../middleware/auth")
@@ -24,6 +25,7 @@ router.post("/", checkAuth, uploadMyMedia) //checked
 router.post("/profileImg", checkAuth, uploadProfileImg) //checked
 router.post("/:userId", checkAuth, checkAdmin, uploadMedia) //checked
 router.put("/me/:mediaId", checkAuth, updateMyMedia) //checked
+router.put("/media/:mediaId/likes", checkAuth, handleLikes)
 router.put("/:mediaId", checkAuth, checkAdmin, updateMedia)
 router.delete("/all", checkAuth, checkAdmin, deleteAll) //checked
 router.delete("/me/:mediaId", checkAuth, deleteMyMedia) //checked

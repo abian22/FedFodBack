@@ -20,10 +20,11 @@ const mediaSchema = mongoose.Schema(
       type:String,
       required:true
     },
-    likes: {
-      type: Number,
-      default: 0,
-    },
+    likedBy: [{
+      type: ObjectId,
+      ref: "User",
+      default: [],
+    }],
     filePath: {
       type: String, 
     },

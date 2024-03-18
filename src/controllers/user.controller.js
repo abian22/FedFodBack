@@ -20,10 +20,8 @@ async function getAllUsers(req, res) {
 async function searchUsers(req, res) {
   try {
     const regex = new RegExp(req.body.username, "i");
-    const users = await User.find(
-      { username: regex },
-      { username: 1, profileImg: 1 }
-    );
+    const users = await User.find({ username: regex }, { username: 1, profileImg: 1 });
+    
 
     if (!users || users.length === 0) {
       return res.status(404).send("No users found");

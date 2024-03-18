@@ -376,6 +376,26 @@ async function updateMyMedia(req, res) {
   }
 }
 
+async function handleLikes(mediaId, userId) {
+  try {
+    const media = await Media.findById(mediaId);
+    if (!media) {
+      throw new Error('No se encontró el medio.');
+    }
+
+    const index = media.likes.indexOf(userId);
+    if (index === -1) {
+      media.likes.push(userId);
+    } else {
+      media.likes.splice(index, 1);
+    }
+    await media.save();
+    return media;
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function updateMedia(req, res) {
   try {
     const mediaId = req.params.mediaId;
@@ -440,4 +460,5 @@ module.exports = {
   updateMedia,
   // randomMedia,
   uploadProfileImg,
+  handleLikes
 };
