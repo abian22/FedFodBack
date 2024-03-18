@@ -396,7 +396,7 @@ async function updateLikes(req, res) {
       // El usuario ya ha dado like, eliminarlo del array
       media.likedBy.splice(index, 1);
     }
-
+    console.log(media)
     await media.save();
     res.status(200).json({ message: 'Like updated successfully' });
   } catch (err) {
