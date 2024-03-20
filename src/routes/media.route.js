@@ -22,7 +22,7 @@ router.get("/", checkAuth, getMedias) //checked
 router.get("/me", checkAuth, getMyMedias) //checked
 // router.get("/randomMedia", checkAuth, randomMedia) //checked
 router.get("/:mediaId", checkAuth, getSingleUserMedia) //checked
-router.get("/:userId", checkAuth, getSomeoneMedias) //checked
+router.get("/user/:userId", checkAuth, getSomeoneMedias) //checked
 router.post("/", checkAuth, uploadMyMedia) //checked
 router.post("/profileImg", checkAuth, uploadProfileImg) //checked
 router.post("/:mediaId/like", checkAuth, updateLikes) //checked
