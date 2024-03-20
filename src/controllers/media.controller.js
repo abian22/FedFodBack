@@ -227,6 +227,21 @@ async function getMedias(req, res) {
   }
 }
 
+async function getSingleUserMedia(req, res) {
+  try {
+    const mediaId = req.params.mediaId;
+
+    const media = await Media.findById(mediaId);
+
+    if (!media) {
+      return res.status(404).json({ error: "Media not found" });
+    }
+    return res.status(200).json(media);
+  } catch (error) {
+    return res.status(500).json({ error: "Error retrieving media", details: error.message });
+  }
+}
+
 async function getMyMedias(req, res) {
   const user = res.locals.user;
 
@@ -464,6 +479,7 @@ module.exports = {
   deleteMyMedia,
   getMedias,
   getMyMedias,
+  getSingleUserMedia,
   getSomeoneMedias,
   deleteMedia,
   uploadMedia,
