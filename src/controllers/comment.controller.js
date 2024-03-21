@@ -159,6 +159,34 @@ async function updateComment(req, res) {
   }
 }
 
+async function updateCommentLikes(req, res) {
+  const { commentId } = req.params;
+  const userId = res.locals.user.id;
+
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    const index = comment.likedBy.indexOf(userId);
+    if (index === -1) {
+      comment.likedBy.push(userId);
+    } else {
+      comment.likedBy.splice(index, 1);
+    }
+    await comment.save();
+    
+    res.status(200).json({
+      message: "Like updated successfully",
+      likedBy: comment.likedBy,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 module.exports = {
   postMyComment,
   getComments,
@@ -167,4 +195,5 @@ module.exports = {
   deleteComment,
   updateMyComment,
   updateComment,
+  updateCommentLikes
 };

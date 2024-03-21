@@ -6,7 +6,8 @@ const {
   deleteMyComment,
   deleteComment,
   updateMyComment,
-  updateComment
+  updateComment,
+  updateCommentLikes
 } = require("../controllers/comment.controller")
 
 const { checkAuth, checkAdmin } = require("../middleware/auth")
@@ -16,6 +17,7 @@ router.get("/:mediaId", checkAuth, getCommentsOfMedia) //checked
 router.post("/:mediaId", checkAuth, postMyComment) //checked
 router.delete("/:commentId", checkAuth, checkAdmin, deleteComment) //checked
 router.delete("/:mediaId/:commentId", checkAuth, deleteMyComment) //checked
+router.post('/:commentId/like', checkAuth, updateCommentLikes);
 router.put("/myComment/:commentId", checkAuth, updateMyComment) //checked
 router.put("/:commentId", checkAuth, checkAdmin, updateComment) //checked
 
