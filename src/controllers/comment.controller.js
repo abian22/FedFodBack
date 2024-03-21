@@ -19,16 +19,19 @@ async function getComments(req, res) {
 
 async function getCommentsOfMedia(req, res) {
   try {
-    const media = await Media.findById(req.params.mediaId);
-    if (!media) {
-      return res.status(404).send("No comments of media found");
-    } else {
-      return res.status(200).json(media.comments);
+    const comments = await Comment.find({ commentedMedia: req.params.mediaId });
+
+    if (!comments) {
+      return res.status(404).send("No comments for this media found");
     }
+
+    return res.status(200).json(comments);
   } catch (error) {
+    console.error("Error fetching comments:", error);
     res.status(500).send(error.message);
   }
 }
+
 
 async function postMyComment(req, res) {
   try {
