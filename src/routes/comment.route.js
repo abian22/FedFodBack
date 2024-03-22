@@ -12,7 +12,7 @@ const {
 
 const { checkAuth, checkAdmin } = require("../middleware/auth")
 
-router.get("/", checkAuth, checkAdmin, getComments) //checked
+router.get("/", checkAuth, getComments) //checked
 router.get("/:mediaId", checkAuth, getCommentsOfMedia) //checked
 router.post("/:mediaId", checkAuth, postMyComment) //checked
 router.delete("/:commentId", checkAuth, checkAdmin, deleteComment) //checked
