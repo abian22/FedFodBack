@@ -1,7 +1,5 @@
-const mongoose = require("mongoose")
-const { ObjectId } = mongoose.Schema
-const commentSchema = require("./comment.model")
-
+const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Schema;
 
 const mediaSchema = mongoose.Schema(
   {
@@ -17,26 +15,21 @@ const mediaSchema = mongoose.Schema(
       type: String,
     },
     mediaUrl: {
-      type:String,
-      required:true
+      type: String,
+      required: true,
     },
-    likedBy: [{
-      type: ObjectId,
-      ref: "User",
-      default: [],
-    }],
+    likedBy: [
+      {
+        type: ObjectId,
+        ref: "User",
+        default: [],
+      },
+    ],
     filePath: {
-      type: String, 
+      type: String,
     },
-    // comments: [
-    //   {
-    //     text: {
-    //       type: String,
-    //     },
-    //   },
-    // ],
   },
-  { timestamps: true,}
-)
+  { timestamps: true }
+);
 
-module.exports = mongoose.model("Media", mediaSchema)
+module.exports = mongoose.model("Media", mediaSchema);
