@@ -2,21 +2,23 @@ const Chat = require("../models/chat.model");
 
 const getMessages = async (req, res) => {
   try {
-    const { receiverId } = req.params;
-    const userId = res.locals.user.id; 
+    const userId = req.params.userId; // Suponiendo que el ID del usuario se pasa como parámetro en la URL
+    
+    // Busca todos los chats donde el receptor sea igual al ID de usuario proporcionado
+    const receivedChats = await Chat.find({ receiver: userId });
 
-    const messages = await Chat.find({
-      $or: [
-        { sender: userId, receiver: receiverId },
-        { sender: receiverId, receiver: userId }
-      ]
-    }).sort({ createdAt: -1 });
-    res.json(messages);
+    // Busca todos los chats donde el remitente sea igual al ID de usuario proporcionado
+    const sentChats = await Chat.find({ sender: userId });
+
+    // Combina los chats recibidos y enviados en una única lista de chats
+    const allChats = receivedChats.concat(sentChats);
+
+    // Devuelve la lista combinada de chats como respuesta
+    res.status(200).json(allChats);
   } catch (error) {
-    console.error("Error al obtener los mensajes:", error);
-    res.status(500).json({ error: "Error al obtener los mensajes" });
+    // En caso de error, pasa el control al middleware de manejo de errores
   }
-};
+}
   const sendMessage = async (req, res) => {
     try {
       const { receiver, message } = req.body;
