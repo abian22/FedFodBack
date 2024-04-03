@@ -16,7 +16,7 @@ const { checkAuth, checkAdmin } = require("../middleware/auth")
 
 const { login, signUp } = require("../controllers/auth.controller")
 
-router.get("/", checkAuth, checkAdmin, getAllUsers) //checked
+router.get("/", checkAuth, getAllUsers) //checked
 router.get("/me", checkAuth, getMe) //checked
 router.get("/:identifier", checkAuth, getOneUser) //checked
 router.post("/", checkAuth, checkAdmin, createUser) //checked

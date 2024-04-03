@@ -23,8 +23,6 @@ const sendMessage = async (transmitter, receptor, messageContent) => {
     await newChat.save();
     console.log("Mensaje guardado en la base de datos");
 
-    io.emit("newMessage", newChat);
-
     return newChat;
   } catch (error) {
     console.error("Error al guardar el mensaje:", error);
