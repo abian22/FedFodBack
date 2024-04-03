@@ -3,7 +3,7 @@ const Chat = require("../models/chat.model");
 const getMessages = async (req, res) => {
   try {
     const { receiverId } = req.params;
-    const userId = res.locals.userId; 
+    const userId = res.locals.user.id; 
 
     const messages = await Chat.find({
       $or: [
