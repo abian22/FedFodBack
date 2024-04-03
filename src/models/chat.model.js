@@ -3,15 +3,25 @@ const { ObjectId } = mongoose.Schema;
 
 const chatSchema = new mongoose.Schema(
   {
-    transmitter: {
+    myId: {
       type: ObjectId,
       ref: "User",
       required: true,
     },
-    receptor: {
+    otherUserId: {
       type: ObjectId,
       ref: "User",
       required: true,
+    },
+    sender: {
+        type: ObjectId,
+        ref: "User",
+        required: true
+    },
+    receiver: {
+        type: ObjectId,
+        ref: "User",
+        required: true
     },
     message: {
       type: String,
