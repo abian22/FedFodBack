@@ -14,12 +14,12 @@ const getMessages = async (req, res) => {
 
   const sendMessage = async (req, res) => {
     try {
-      const { transmitter, receptor, messageContent } = req.body;
+      const { transmitter, receptor, message } = req.body;
   
       const newChat = new Chat({
         transmitter: transmitter,
         receptor: receptor,
-        message: messageContent,
+        message: message,
       });
   
       await newChat.save();
