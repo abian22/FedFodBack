@@ -12,23 +12,26 @@ const getMessages = async (req, res) => {
     }
   };
 
-const sendMessage = async (transmitter, receptor, messageContent) => {
-  try {
-    const newChat = new Chat({
-      transmitter: transmitter,
-      receptor: receptor,
-      message: messageContent,
-    });
-
-    await newChat.save();
-    console.log("Mensaje guardado en la base de datos");
-
-    return newChat;
-  } catch (error) {
-    console.error("Error al guardar el mensaje:", error);
-    throw error;
-  }
-};
+  const sendMessage = async (req, res) => {
+    try {
+      const { transmitter, receptor, messageContent } = req.body;
+  
+      const newChat = new Chat({
+        transmitter: transmitter,
+        receptor: receptor,
+        message: messageContent,
+      });
+  
+      await newChat.save();
+      console.log("Mensaje guardado en la base de datos");
+  
+      res.json(newChat);
+    } catch (error) {
+      console.error("Error al guardar el mensaje:", error);
+      res.status(500).json({ error: "Error al guardar el mensaje" });
+    }
+  };
+  
 
 module.exports = {
   sendMessage,
