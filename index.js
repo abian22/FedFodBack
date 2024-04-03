@@ -6,8 +6,6 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
 const passport = require("passport");
-const http = require("http");
-const { Server } = require("socket.io");
 const GoogleStrategy = require("passport-google-oauth20");
 const { google } = require("googleapis");
 const MongoStore = require("connect-mongo");
@@ -16,18 +14,6 @@ const drive = google.drive("v3");
 
 function startExpress() {
   const app = express();
-  const server = http.createServer(app);
-  const io = new Server(server, {
-    cors: {
-      origin: [
-        "http://feedfoodback.onrender.com",
-        "http://localhost:5173",
-        "https://lighthearted-muffin-287c32.netlify.app",
-      ],
-      methods: ["GET", "POST", "PUT", "DELETE"]
-    }
-  });
-
   app.use(
     require("express-session")({
       secret: "Enter your secret key",
@@ -52,6 +38,13 @@ function startExpress() {
       allowedHeaders: ["Content-Type", "token"],
     })
   );
+  // app.use(
+  //   cors({
+  //     origin: "http://feedfoodback.onrender.com",
+  //     methods: ["GET", "POST", "PUT", "DELETE"],
+  //     optionsSuccessStatus: 204,
+  //   })
+  // )
 
   app.use(express.json());
   app.use("/api", require("./src/routes/index"));
@@ -65,31 +58,9 @@ function startExpress() {
       console.log("MongoDB connected....");
     })
     .catch((err) => console.log(err.message));
-    io.on('connection', (socket) => {
-      console.log('Nuevo cliente conectado:', socket.id);
-      
-      // Manejar evento de envío de mensaje
-      socket.on('sendMessage', async (data) => {
-        console.log('Mensaje recibido:', data);
-        // Guardar mensaje en la base de datos (si es necesario)
-        // En este ejemplo, asumimos que `Message` es un modelo de mongoose
-        // Asegúrate de importar el modelo Message si no lo has hecho ya
-        const newMessage = new Message({
-          sender: data.sender,
-          text: data.text,
-        });
-        await newMessage.save();
-        // Emitir el mensaje a todos los clientes conectados
-        io.emit('receiveMessage', newMessage);
-      });
-      
-      // Manejar desconexión de cliente
-      socket.on('disconnect', () => {
-        console.log('Cliente desconectado:', socket.id);
-      });
-    });
-  server.listen(process.env.PORT, () => {
-    console.log(`En el puerto ${process.env.PORT} !!!`);
+
+  app.listen(process.env.PORT, () => {
+    console.log(`On port ${process.env.PORT} !!!`);
   });
 }
 
@@ -120,11 +91,11 @@ passport.use(
         });
 
         await newUser.save();
-        console.log("Autenticación de Google exitosa:", profile);
+        console.log("Google authentication successful:", profile);
 
         return done(null, newUser);
       } catch (error) {
-        console.error("Error en la autenticación de Google:", error);
+        console.error("Error in Google authentication:", error);
         return done(error, null);
       }
     }
