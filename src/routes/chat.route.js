@@ -1,0 +1,11 @@
+const router = require("express").Router()
+const {
+  sendMessage,
+  getMessages,
+} = require("../controllers/chat.controller.js");
+const { checkAuth } = require("../middleware/auth");
+
+router.get("/messages/:receiverId", checkAuth, getMessages);
+router.post("/sendMessage", checkAuth, sendMessage);
+
+module.exports = router;

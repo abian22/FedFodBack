@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
 const passport = require("passport");
+const http = require("http");
+const { Server } = require("socket.io");
 const GoogleStrategy = require("passport-google-oauth20");
 const { google } = require("googleapis");
 const MongoStore = require("connect-mongo");
@@ -14,6 +16,13 @@ const drive = google.drive("v3");
 
 function startExpress() {
   const app = express();
+  const server = http.createServer(app);
+  const io = new Server(server,{
+    cors: {
+      origin: "http://localhost:4000",
+    },
+  });
+
   app.use(
     require("express-session")({
       secret: "Enter your secret key",
@@ -38,13 +47,6 @@ function startExpress() {
       allowedHeaders: ["Content-Type", "token"],
     })
   );
-  // app.use(
-  //   cors({
-  //     origin: "http://feedfoodback.onrender.com",
-  //     methods: ["GET", "POST", "PUT", "DELETE"],
-  //     optionsSuccessStatus: 204,
-  //   })
-  // )
 
   app.use(express.json());
   app.use("/api", require("./src/routes/index"));
@@ -58,9 +60,22 @@ function startExpress() {
       console.log("MongoDB connected....");
     })
     .catch((err) => console.log(err.message));
+    io.on("connection", (socket) => {
+      console.log("Nuevo socket conectado:", socket.id);
+  
+      socket.on("message", (message) => {
+        console.log("Message received:", message);
+        io.emit("message", message);
+      });
+  
+      socket.on("disconnect", () => {
+        console.log("Socket desconectado:", socket.id);
+      });
+    });
 
-  app.listen(process.env.PORT, () => {
-    console.log(`On port ${process.env.PORT} !!!`);
+
+  server.listen(process.env.PORT, () => {
+    console.log(`En el puerto ${process.env.PORT} !!!`);
   });
 }
 
@@ -91,11 +106,11 @@ passport.use(
         });
 
         await newUser.save();
-        console.log("Google authentication successful:", profile);
+        console.log("Autenticación de Google exitosa:", profile);
 
         return done(null, newUser);
       } catch (error) {
-        console.error("Error in Google authentication:", error);
+        console.error("Error en la autenticación de Google:", error);
         return done(error, null);
       }
     }
