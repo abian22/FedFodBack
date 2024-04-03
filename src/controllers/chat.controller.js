@@ -15,9 +15,9 @@ const getMessages = async (req, res) => {
   const sendMessage = async (req, res) => {
     try {
       const { receiver, message } = req.body;
-  
+      
       const newChat = new Chat({
-        sender: res.locals.userId,
+        sender: res.locals.user.id,
         receiver: receiver,
         message: message,
       });
@@ -31,6 +31,7 @@ const getMessages = async (req, res) => {
       res.status(500).json({ error: "Error al guardar el mensaje" });
     }
   };
+  
   
 
 module.exports = {
