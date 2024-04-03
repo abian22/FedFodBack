@@ -56,20 +56,28 @@ function startExpress() {
       console.log("MongoDB connected....");
     })
     .catch((err) => console.log(err.message));
-    io.on("connection", (socket) => {
-      console.log("Nuevo socket conectado:", socket.id);
-  
-      socket.on("message", (message) => {
-        console.log("Message received:", message);
-        io.emit("message", message);
+    io.on('connection', (socket) => {
+      console.log('Nuevo cliente conectado:', socket.id);
+    
+      // Manejar evento de envío de mensaje
+      socket.on('sendMessage', async (data) => {
+        console.log('Mensaje recibido:', data);
+        // Guardar mensaje en la base de datos
+        const newMessage = new Message({
+          sender: data.sender,
+          text: data.text,
+        });
+        await newMessage.save();
+        // Emitir el mensaje a todos los clientes conectados
+        io.emit('receiveMessage', newMessage);
       });
-  
-      socket.on("disconnect", () => {
-        console.log("Socket desconectado:", socket.id);
+    
+      // Manejar desconexión de cliente
+      socket.on('disconnect', () => {
+        console.log('Cliente desconectado:', socket.id);
       });
-    });
-
-
+    })
+    
   server.listen(process.env.PORT, () => {
     console.log(`En el puerto ${process.env.PORT} !!!`);
   });
