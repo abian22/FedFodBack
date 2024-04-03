@@ -17,7 +17,16 @@ const drive = google.drive("v3");
 function startExpress() {
   const app = express();
   const server = http.createServer(app);
-  const io = new Server(server);
+  const io = new Server(server, {
+    cors: {
+      origin: [
+        "http://feedfoodback.onrender.com",
+        "http://localhost:5173",
+        "https://lighthearted-muffin-287c32.netlify.app",
+      ],
+      methods: ["GET", "POST", "PUT", "DELETE"]
+    }
+  });
 
   app.use(
     require("express-session")({
@@ -77,7 +86,7 @@ function startExpress() {
         console.log('Cliente desconectado:', socket.id);
       });
     })
-    
+
   server.listen(process.env.PORT, () => {
     console.log(`En el puerto ${process.env.PORT} !!!`);
   });
