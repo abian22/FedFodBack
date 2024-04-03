@@ -67,11 +67,13 @@ function startExpress() {
     .catch((err) => console.log(err.message));
     io.on('connection', (socket) => {
       console.log('Nuevo cliente conectado:', socket.id);
-    
+      
       // Manejar evento de envío de mensaje
       socket.on('sendMessage', async (data) => {
         console.log('Mensaje recibido:', data);
-        // Guardar mensaje en la base de datos
+        // Guardar mensaje en la base de datos (si es necesario)
+        // En este ejemplo, asumimos que `Message` es un modelo de mongoose
+        // Asegúrate de importar el modelo Message si no lo has hecho ya
         const newMessage = new Message({
           sender: data.sender,
           text: data.text,
@@ -80,13 +82,12 @@ function startExpress() {
         // Emitir el mensaje a todos los clientes conectados
         io.emit('receiveMessage', newMessage);
       });
-    
+      
       // Manejar desconexión de cliente
       socket.on('disconnect', () => {
         console.log('Cliente desconectado:', socket.id);
       });
-    })
-
+    });
   server.listen(process.env.PORT, () => {
     console.log(`En el puerto ${process.env.PORT} !!!`);
   });
