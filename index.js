@@ -17,7 +17,11 @@ const drive = google.drive("v3");
 function startExpress() {
   const app = express();
   const server = http.createServer(app);
-  const io = new Server(server);
+  const io = new Server(server,{
+    cors: {
+      origin: "http://localhost:4000",
+    },
+  });
 
   app.use(
     require("express-session")({
@@ -56,18 +60,19 @@ function startExpress() {
       console.log("MongoDB connected....");
     })
     .catch((err) => console.log(err.message));
-  io.on("connection", (socket) => {
-    console.log("Nuevo socket conectado:", socket.id);
-
-    socket.on("message", (message) => {
-      console.log("Message received:", message);
-      io.emit("message", message);
+    io.on("connection", (socket) => {
+      console.log("Nuevo socket conectado:", socket.id);
+  
+      socket.on("message", (message) => {
+        console.log("Message received:", message);
+        io.emit("message", message);
+      });
+  
+      socket.on("disconnect", () => {
+        console.log("Socket desconectado:", socket.id);
+      });
     });
 
-    socket.on("disconnect", () => {
-      console.log("Socket desconectado:", socket.id);
-    });
-  });
 
   server.listen(process.env.PORT, () => {
     console.log(`En el puerto ${process.env.PORT} !!!`);
