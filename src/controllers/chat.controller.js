@@ -5,17 +5,17 @@ const getMessages = async (req, res) => {
     const userId = req.params.userId; 
 
     const receivedChats = await Chat.find({ receiver: userId });
-
     const sentChats = await Chat.find({ sender: userId });
 
-    const allChats = receivedChats.concat(sentChats);
-    const reversedChats = allChats.reverse();
+    // Concatenar los chats y ordenarlos por fecha de creación de manera descendente
+    const allChats = receivedChats.concat(sentChats).sort((a, b) => b.createdAt - a.createdAt);
 
     res.status(200).json(allChats);
   } catch (error) {
     // En caso de error, pasa el control al middleware de manejo de errores
   }
 }
+
   const sendMessage = async (req, res) => {
     try {
       const { receiver, message } = req.body;
