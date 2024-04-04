@@ -2,18 +2,15 @@ const Chat = require("../models/chat.model");
 
 const getMessages = async (req, res) => {
   try {
-    const userId = req.params.userId; // Suponiendo que el ID del usuario se pasa como parámetro en la URL
-    
-    // Busca todos los chats donde el receptor sea igual al ID de usuario proporcionado
+    const userId = req.params.userId; 
+
     const receivedChats = await Chat.find({ receiver: userId });
 
-    // Busca todos los chats donde el remitente sea igual al ID de usuario proporcionado
     const sentChats = await Chat.find({ sender: userId });
 
-    // Combina los chats recibidos y enviados en una única lista de chats
     const allChats = receivedChats.concat(sentChats);
+    const reversedChats = allChats.reverse();
 
-    // Devuelve la lista combinada de chats como respuesta
     res.status(200).json(allChats);
   } catch (error) {
     // En caso de error, pasa el control al middleware de manejo de errores
