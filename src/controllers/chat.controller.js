@@ -5,7 +5,6 @@ const getMessages = async (req, res) => {
     const currentUser = res.locals.user.id;
     const otherUserId = req.params.id;
 
-    // Obtener mensajes recibidos y enviados
     const receivedChat = await Chat.find({
       receiver: otherUserId,
       sender: currentUser,
@@ -15,15 +14,9 @@ const getMessages = async (req, res) => {
       receiver: currentUser,
     });
 
-    // Crear un conjunto (Set) para almacenar mensajes únicos
-    const allChatsSet = new Set([...receivedChat, ...sentChat]);
+    const allChats = [...receivedChat, ...sentChat].sort((a, b) => b.createdAt - a.createdAt);
 
-    // Convertir el conjunto de nuevo en un array
-    const allChats = Array.from(allChatsSet);
 
-    console.log(allChats);
-
-    // Enviar la respuesta JSON con los mensajes
     res.status(200).json(allChats);
   } catch (error) {
     console.error(error);
