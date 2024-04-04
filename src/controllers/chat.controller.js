@@ -14,7 +14,7 @@ const getMessages = async (req, res) => {
       receiver: currentUser,
     });
 
-    const allChats = [...receivedChat, ...sentChat].sort((a, b) => b.createdAt - a.createdAt);
+    const allChats = [...receivedChat, ...sentChat].sort((a, b) => a.createdAt - b.createdAt);
 
 
     res.status(200).json(allChats);
