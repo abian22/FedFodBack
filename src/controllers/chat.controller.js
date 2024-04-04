@@ -8,7 +8,7 @@ const getMessages = async (req, res) => {
     const sentChats = await Chat.find({ sender: userId });
 
     // Concatenar los chats y ordenarlos por fecha de creación de manera descendente
-    const allChats = receivedChats.concat(sentChats).sort((a, b) => b.createdAt - a.createdAt);
+    const allChats = receivedChats.concat(sentChats).sort((a, b) => a.createdAt - b.createdAt);
 
     res.status(200).json(allChats);
   } catch (error) {
