@@ -70,17 +70,28 @@ function startExpress() {
   io.on('connection', (socket) => {
     console.log('Nuevo cliente conectado');
   
-    const intervalId = setInterval(() => {
-      const randomNumber = Math.random();
-      socket.emit('streamData', randomNumber); // Enviar datos de streaming al cliente
-    }, 1000);
-  
-    socket.on('disconnect', () => {
-      console.log('Cliente desconectado');
-      clearInterval(intervalId); // Detener la simulación de streaming cuando un cliente se desconecta
-    });
-  });
+    const videoStream = iniciarTransmisionDeVideo();
 
+    videoStream.on('data', (videoFragment) => {
+        socket.emit('streamData', videoFragment); 
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Cliente desconectado');
+        detenerTransmisionDeVideo(videoStream); 
+    });
+});
+
+function iniciarTransmisionDeVideo() {
+    const videoStream = obtenerFlujoDeVideo();
+
+
+    return videoStream;
+}
+
+function detenerTransmisionDeVideo(videoStream) {
+    videoStream.close(); 
+}
   mongoose
     .connect(process.env.MONGODB_URI, {
       dbName: process.env.DB_NAME,
