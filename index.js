@@ -92,6 +92,7 @@ async function startExpress() {
     http: {
       port: 8000,
       allow_origin: '*',
+      host: ['3.75.158.163', '3.125.183.140', '35.157.117.28']
     },
   };
 
