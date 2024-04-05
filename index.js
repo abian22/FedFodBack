@@ -17,7 +17,18 @@ const drive = google.drive("v3");
 function startExpress() {
   const app = express();
   const server = http.createServer(app);
-  const io = socketIo(server);
+  const io = require('socket.io')(server, {
+    cors: {
+      origin: [
+        "http://feedfoodback.onrender.com",
+        "http://localhost:5173",
+        "https://lighthearted-muffin-287c32.netlify.app",
+        "https://feedfood.onrender.com"
+      ],
+      methods: ["GET", "POST", "PUT", "DELETE"],
+      allowedHeaders: ["Content-Type", "token"],
+    }
+  });
 
   app.use(
     require("express-session")({
