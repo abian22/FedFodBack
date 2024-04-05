@@ -10,13 +10,10 @@ const GoogleStrategy = require("passport-google-oauth20");
 const { google } = require("googleapis");
 const MongoStore = require("connect-mongo");
 const http = require('http');
-const socketIo = require('socket.io')
-// const fileUpload = require("express-fileupload")
-const drive = google.drive("v3");
+const socketIo = require('socket.io');
 const ffmpeg = require('fluent-ffmpeg');
-
-
-function startExpress() {
+const NodeMediaServer = require ("node-media-server")
+async function startExpress() {
   const app = express();
   const server = http.createServer(app);
   const io = require('socket.io')(server, {
@@ -52,19 +49,10 @@ function startExpress() {
         "https://feedfood.onrender.com"
       ],
       methods: ["GET", "POST", "PUT", "DELETE"],
-      // optionsSuccessStatus: 204,
-      // credentials: true,
       allowedHeaders: ["Content-Type", "token"],
     })
   );
-  // app.use(
-  //   cors({
-  //     origin: "http://feedfoodback.onrender.com",
-  //     methods: ["GET", "POST", "PUT", "DELETE"],
-  //     optionsSuccessStatus: 204,
-  //   })
-  // )
-
+  
   app.use(express.json());
   app.use("/api", require("./src/routes/index"));
   app.use(morgan("dev"));
@@ -82,42 +70,34 @@ function startExpress() {
         console.log('Cliente desconectado');
         detenerTransmisionDeVideo(videoStream); 
     });
-});
+  });
 
-function obtenerFlujoDeVideo() {
-  const videoStream = ffmpeg('/dev/video0')
-      .inputFormat('video4linux2')
-      .outputOptions('-vf', 'format=yuv420p')
-      .format('mpegts')
-      .output('pipe:');
+  await mongoose.connect(process.env.MONGODB_URI, {
+    dbName: process.env.DB_NAME,
+  });
+  console.log("MongoDB connected....");
 
-  return videoStream;
-}
-
-function iniciarTransmisionDeVideo() {
-    const videoStream = obtenerFlujoDeVideo();
-
-
-    return videoStream;
-}
-
-function detenerTransmisionDeVideo(videoStream) {
-    videoStream.kill(); 
-}
-  mongoose
-    .connect(process.env.MONGODB_URI, {
-      dbName: process.env.DB_NAME,
-    })
-    .then(() => {
-      console.log("MongoDB connected....");
-    })
-    .catch((err) => console.log(err.message));
-
-    server.listen(process.env.PORT, () => {
+  server.listen(process.env.PORT, () => {
     console.log(`On port ${process.env.PORT} !!!`);
   });
-}
 
+  const config = {
+    rtmp: {
+      port: 1935,
+      chunk_size: 60000,
+      gop_cache: true,
+      ping: 30,
+      ping_timeout: 60,
+    },
+    http: {
+      port: 8000,
+      allow_origin: '*',
+    },
+  };
+
+  const nms = new NodeMediaServer(config);
+  nms.run();
+}
 
 const driveAuth = new google.auth.GoogleAuth({
   // keyFile: './feedFoodDrive.json',
