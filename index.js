@@ -13,6 +13,8 @@ const http = require('http');
 const socketIo = require('socket.io')
 // const fileUpload = require("express-fileupload")
 const drive = google.drive("v3");
+const ffmpeg = require('fluent-ffmpeg');
+
 
 function startExpress() {
   const app = express();
@@ -81,6 +83,16 @@ function startExpress() {
         detenerTransmisionDeVideo(videoStream); 
     });
 });
+
+function obtenerFlujoDeVideo() {
+  const videoStream = ffmpeg('/dev/video0')
+      .inputFormat('video4linux2')
+      .outputOptions('-vf', 'format=yuv420p')
+      .format('mpegts')
+      .output('pipe:');
+
+  return videoStream;
+}
 
 function iniciarTransmisionDeVideo() {
     const videoStream = obtenerFlujoDeVideo();
