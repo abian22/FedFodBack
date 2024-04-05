@@ -9,11 +9,16 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20");
 const { google } = require("googleapis");
 const MongoStore = require("connect-mongo");
+const http = require('http');
+const socketIo = require('socket.io')
 // const fileUpload = require("express-fileupload")
 const drive = google.drive("v3");
 
 function startExpress() {
   const app = express();
+  const server = http.createServer(app);
+  const io = socketIo(server);
+
   app.use(
     require("express-session")({
       secret: "Enter your secret key",
@@ -50,6 +55,20 @@ function startExpress() {
   app.use("/api", require("./src/routes/index"));
   app.use(morgan("dev"));
 
+  io.on('connection', (socket) => {
+    console.log('Nuevo cliente conectado');
+  
+    const intervalId = setInterval(() => {
+      const randomNumber = Math.random();
+      socket.emit('streamData', randomNumber); // Enviar datos de streaming al cliente
+    }, 1000);
+  
+    socket.on('disconnect', () => {
+      console.log('Cliente desconectado');
+      clearInterval(intervalId); // Detener la simulación de streaming cuando un cliente se desconecta
+    });
+  });
+
   mongoose
     .connect(process.env.MONGODB_URI, {
       dbName: process.env.DB_NAME,
@@ -59,10 +78,11 @@ function startExpress() {
     })
     .catch((err) => console.log(err.message));
 
-  app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
     console.log(`On port ${process.env.PORT} !!!`);
   });
 }
+
 
 const driveAuth = new google.auth.GoogleAuth({
   // keyFile: './feedFoodDrive.json',
