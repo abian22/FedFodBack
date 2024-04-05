@@ -97,6 +97,16 @@ async function startExpress() {
   };
 
   const nms = new NodeMediaServer(config);
+  nms.on('prePublish', (id, StreamPath, args) => {
+    // Obtener el ID del usuario logeado desde res.locals
+    const userId = res.locals.user.id;
+  
+    // Generar el nombre único del archivo de streaming utilizando el ID del usuario
+    const streamFileName = `stream_${userId}.m3u8`;
+  
+    // Establecer el nombre único del archivo de streaming
+    args.streamPath = streamFileName;
+  });
   nms.run();
 }
 
