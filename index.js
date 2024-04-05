@@ -97,15 +97,29 @@ async function startExpress() {
   };
 
   const nms = new NodeMediaServer(config);
-  nms.on('prePublish', (id, StreamPath, args) => {
-    // Obtener el ID del usuario logeado desde res.locals
-    const userId = res.locals.user.id;
-  
+  nms.on("postPublish", (id, StreamPath, args) => {
     // Generar el nombre único del archivo de streaming utilizando el ID del usuario
+    const userId = id.split("_")[1]; // Suponiendo que el ID del stream sea "stream_userID"
     const streamFileName = `stream_${userId}.m3u8`;
   
     // Establecer el nombre único del archivo de streaming
     args.streamPath = streamFileName;
+  
+    // Comando ffmpeg para transcodificar el flujo de entrada RTMP en formato HLS
+    const ffmpegCommand = `ffmpeg -i rtmp://localhost:1935${StreamPath} -c:v libx264 -c:a aac -f hls -hls_time 4 -hls_list_size 6 -hls_wrap 10 /path/to/hls/${streamFileName}`;
+  
+    // Ejecutar el comando ffmpeg
+    exec(ffmpegCommand, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error ejecutando ffmpeg: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+    });
   });
   nms.run();
 }
