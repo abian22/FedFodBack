@@ -102,7 +102,7 @@ function iniciarTransmisionDeVideo() {
 }
 
 function detenerTransmisionDeVideo(videoStream) {
-    videoStream.close(); 
+    videoStream.kill(); 
 }
   mongoose
     .connect(process.env.MONGODB_URI, {
