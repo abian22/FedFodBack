@@ -8,35 +8,15 @@ const cors = require("cors");
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20");
 const { google } = require("googleapis");
-const MongoStore = require("connect-mongo");
-const http = require('http');
-const socketIo = require('socket.io');
-const NodeMediaServer = require ("node-media-server")
 
 async function startExpress() {
   const app = express();
-  const server = http.createServer(app);
-  const io = require('socket.io')(server, {
-    cors: {
-      origin: [
-        "http://feedfoodback.onrender.com",
-        "http://localhost:5173",
-        "https://lighthearted-muffin-287c32.netlify.app",
-        "https://feedfood.onrender.com"
-      ],
-      methods: ["GET", "POST", "PUT", "DELETE"],
-      allowedHeaders: ["Content-Type", "token"],
-    }
-  });
 
   app.use(
     require("express-session")({
       secret: "Enter your secret key",
       resave: true,
       saveUninitialized: true,
-      store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI,
-      }),
     })
   );
   app.use(passport.initialize());
@@ -57,71 +37,15 @@ async function startExpress() {
   app.use("/api", require("./src/routes/index"));
   app.use(morgan("dev"));
 
-  io.on('connection', (socket) => {
-    console.log('Nuevo cliente conectado');
-  
-    const videoStream = iniciarTransmisionDeVideo();
-
-    videoStream.on('data', (videoFragment) => {
-        socket.emit('streamData', videoFragment); 
-    });
-
-    socket.on('disconnect', () => {
-        console.log('Cliente desconectado');
-        detenerTransmisionDeVideo(videoStream); 
-    });
-  });
-
   await mongoose.connect(process.env.MONGODB_URI, {
     dbName: process.env.DB_NAME,
   });
   console.log("MongoDB connected....");
 
-  server.listen(process.env.PORT, () => {
+  app.listen(process.env.PORT, () => {
     console.log(`On port ${process.env.PORT} !!!`);
   });
 
-  const config = {
-    rtmp: {
-      port: 1935,
-      chunk_size: 60000,
-      gop_cache: true,
-      ping: 30,
-      ping_timeout: 60,
-    },
-    http: {
-      port: 8000,
-      allow_origin: '*',
-      host: ['3.75.158.163', '3.125.183.140', '35.157.117.28']
-    },
-  };
-
-  const nms = new NodeMediaServer(config);
-  nms.on("postPublish", (id, StreamPath, args) => {
-    // Generar el nombre único del archivo de streaming utilizando el ID del usuario
-    const userId = id.split("_")[1]; // Suponiendo que el ID del stream sea "stream_userID"
-    const streamFileName = `stream_${userId}.m3u8`;
-  
-    // Establecer el nombre único del archivo de streaming
-    args.streamPath = streamFileName;
-  
-    // Comando ffmpeg para transcodificar el flujo de entrada RTMP en formato HLS
-    const ffmpegCommand = `ffmpeg -i rtmp://localhost:1935${StreamPath} -c:v libx264 -c:a aac -f hls -hls_time 4 -hls_list_size 6 -hls_wrap 10 /path/to/hls/${streamFileName}`;
-  
-    // Ejecutar el comando ffmpeg
-    exec(ffmpegCommand, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error ejecutando ffmpeg: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.error(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-    });
-  });
-  nms.run();
 }
 
 const driveAuth = new google.auth.GoogleAuth({

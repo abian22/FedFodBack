@@ -7,6 +7,6 @@ router.use("/google", require("./google.route"))
 router.use("/comment", require("./comment.route"))
 router.use("/notification", require("./notification.route"))
 router.use("/chat", require("./chat.route"))
-router.use("/streaming", require("./streaming.route"))
+router.use("/payment", require("./payment.route"))
 
 module.exports = router
