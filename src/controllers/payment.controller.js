@@ -15,7 +15,7 @@ async function payment (req, res) {
             product_data: {
               name: "Donation",
             },
-            unit_amount: amount * 100, 
+            amount: amount * 100, 
           },
           quantity: 1,
         },
