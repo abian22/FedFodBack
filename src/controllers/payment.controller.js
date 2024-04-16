@@ -21,8 +21,8 @@ async function payment (req, res) {
         },
       ],
       mode: "payment",
-      success_url: "https://lighthearted-muffin-287c32.netlify.app/",
-      cancel_url: "https://lighthearted-muffin-287c32.netlify.app/",
+      success_url: "http://localhost:5173",
+      cancel_url: "http://localhost:5173",
     });
 
     res.json({ sessionId: session.id });
