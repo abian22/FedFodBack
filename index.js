@@ -27,7 +27,7 @@ async function startExpress() {
         "http://localhost:5173",
         "https://lighthearted-muffin-287c32.netlify.app",
         "https://feedfood.onrender.com",
-        "https://ttk-back2.vercel.app/api"
+        "https://ttk-back2.vercel.app"
       ],
       methods: ["GET", "POST", "PUT", "DELETE"],
       allowedHeaders: ["Content-Type", "token"],
