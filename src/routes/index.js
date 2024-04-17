@@ -1,10 +1,6 @@
 const express = require("express")
 const router = express.Router()
 
-router.get("/", (req, res) => {
-    res.send("¡Hola desde la ruta principal!");
-  });
-  
 
 router.use("/user", require("./user.route"))
 router.use("/media", require("./media.route"))
