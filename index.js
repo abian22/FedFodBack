@@ -27,7 +27,7 @@ async function startExpress() {
         "http://localhost:5173",
         "https://lighthearted-muffin-287c32.netlify.app",
         "https://feedfood.onrender.com",
-        "https://faint-heartbreaking-animal.glitch.me"
+        "https://ttk-back2-git-main-abian22s-projects.vercel.app/api"
       ],
       methods: ["GET", "POST", "PUT", "DELETE"],
       allowedHeaders: ["Content-Type", "token"],
