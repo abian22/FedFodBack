@@ -26,7 +26,8 @@ async function startExpress() {
         "http://feedfoodback.onrender.com",
         "http://localhost:5173",
         "https://lighthearted-muffin-287c32.netlify.app",
-        "https://feedfood.onrender.com"
+        "https://feedfood.onrender.com",
+        "https://faint-heartbreaking-animal.glitch.me"
       ],
       methods: ["GET", "POST", "PUT", "DELETE"],
       allowedHeaders: ["Content-Type", "token"],
