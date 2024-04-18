@@ -13,10 +13,6 @@ const notificationSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    //   type: {
-    //     type: String,
-    //     required: true,
-    //   },
     message: {
       type: String,
       required: true,
