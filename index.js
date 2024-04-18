@@ -1,6 +1,5 @@
 const dotenv = require("dotenv").config();
 const User = require("./src/models/user.model.js");
-
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
@@ -27,7 +26,7 @@ async function startExpress() {
         "http://localhost:5173",
         "https://lighthearted-muffin-287c32.netlify.app",
         "https://feedfood.onrender.com",
-        "https://ttk-back2.vercel.app"
+
       ],
       methods: ["GET", "POST", "PUT", "DELETE"],
       allowedHeaders: ["Content-Type", "token"],
@@ -50,7 +49,6 @@ async function startExpress() {
 }
 
 const driveAuth = new google.auth.GoogleAuth({
-  // keyFile: './feedFoodDrive.json',
   scopes: "https://www.googleapis.com/auth/drive.file",
 });
 
