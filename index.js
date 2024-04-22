@@ -24,7 +24,7 @@ async function startExpress() {
       origin: [
         "http://feedfoodback.onrender.com",
         "http://localhost:5173",
-        "https://lighthearted-muffin-287c32.netlify.app",
+        "https://fedfod.netlify.app",
         "https://feedfood.onrender.com",
 
       ],
