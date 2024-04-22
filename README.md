@@ -14,23 +14,23 @@ The main objective of this project is to explore and understand how various key 
 - Node.js and Express.js for the backend.
 - React.js for the frontend.
 - User authentication via Google.
-- Online payment services for donation functionality.
-- 
+- Online payment services for donation.
+ 
 ## Installation and Server Execution
 
 To run the backend, you'll need to use npm install to install the packages and then start it with the command node index.js.
 
 ## Hosting
 
-This project is hosted on Render, and the frontend can be accessed via the following URL https://github.com/abian22/FedFodFront: 
+This project is hosted on Render, and the frontend can be accessed via the following URL https://github.com/abian22/FedFodFront 
 
 ## Key Features
 
 1. **User Authentication**: Allows users to register and log in to the application using their Google accounts.
-2. **File Upload**: Enables users to upload and share videos on the platform.
+2. **File Upload**: Enables users to upload and share videos or photos on the platform.
 3. **Real-Time Chat**: Facilitates real-time communication between users through an integrated chat.
 4. **Notification Management**: Sends notifications to users to inform them about important events within the application.
-5. **Donation System**: Allows users to make online donations to support the development and maintenance of the application.
+5. **Donation System**: Allows users to make online donations.
 
 ## ENDPOINTS
 
