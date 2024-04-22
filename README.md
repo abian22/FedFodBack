@@ -32,4 +32,80 @@ This project is hosted on Render, and the frontend can be accessed via the follo
 4. **Notification Management**: Sends notifications to users to inform them about important events within the application.
 5. **Donation System**: Allows users to make online donations to support the development and maintenance of the application.
 
+## ENDPOINTS
 
+### Auth Endpoints
+
+| METHOD | ENDPOINT     | TOKEN | ROLE | DESCRIPTION           |
+| ------ | ------------ | ----- | ---- | --------------------- |
+| POST   | /auth/signup | -     | -    | User Sign Up          |
+| POST   | /auth/login  | -     | -    | User Log In           |
+
+### User Endpoints
+
+| METHOD | ENDPOINT                                    | TOKEN | ROLE  | DESCRIPTION                                          |
+| ------ | ------------------------------------------- | ----- | ----- | ---------------------------------------------------- |
+| GET    | /user                                       | YES   | User  | Get all users                                        | 
+| GET    | /user/me                                    | YES   | User  | Get user´s profile access                            |            
+| GET    | /user/:identifier                           | YES   | User  | Get one user                                         |
+| POST   | /user                                       | YES   | Admin | Add one user                                         |
+| POST   | /user/signUp                                | YES   | User  | User registration                                    |
+| POST   | /user/login                                 | YES   | User  | User login                                           |
+| POST   | /user/search                                | YES   | user  | Search a user                                        | 
+| PUT    | /user/me                                    | YES   | User  | Update personal profile by user                      |
+| PUT    | /user/:id                                   | YES   | Admin | Update one selected user                             |
+| DELETE | /user/me                                    | YES   | User  | Delete personal profile by user                      |
+| DELETE | /user/all                                   | YES   | Admin | Delete all users                                     |
+| DELETE | /user/:id                                   | YES   | Admin | Delete a user                                        |
+
+### Media Endpoints
+
+| METHOD | ENDPOINT                                    | TOKEN | ROLE  | DESCRIPTION                                          |
+| ------ | ------------------------------------------- | ----- | ----- | ---------------------------------------------------- |
+| GET    | /media                                       | YES   | User  | Get all media                                       |
+| GET    | /media/me                                    | YES   | User  | Get user´s media                                    |
+| GET    | /media/:mediaId                              | YES   | User  | Get one media                                       |
+| GET    | /media/user/:userId                          | YES   | User  | Get all medias from a user                          |
+| POST   | /media/profileImg                            | YES   | User  | Allows modifying the profile picture                |
+| POST   | /media/search                                | YES   | user  | Search a user                                       |
+| POST   | /media/:mediaId/like                         | YES   | User  | Add or remove a like from a media                   |
+| POST   | /media/:userId                               | YES   | Admin | Upload a media for a user                           |
+| PUT    | /media/me/:mediaId                           | YES   | User  | Modify the description from the user media          |
+| PUT    | /media/:mediaId                              | YES   | Admin | Modify the description of a media                   |
+| DELETE | /media/all                                   | YES   | Admin | Delete all medias                                   |
+| DELETE | /media/me/:mediaId                           | YES   | User  | Delete a media from the user's own                  |
+| DELETE | /media/:mediaId                              | YES   | Admin | Delete a media                                      |
+
+### Comment Endpoints
+
+| METHOD | ENDPOINT                                    | TOKEN | ROLE  | DESCRIPTION                                          |
+| ------ | ------------------------------------------- | ----- | ----- | ---------------------------------------------------- |
+| GET    | /comment                                    | YES   | User  | Get all comments                                     |
+| GET    | /comment/:mediaId                           | YES   | User  | Get all comments from a media                        |
+| POST   | /comment/:mediaId                           | YES   | User  | Post a comment in a media                            |
+| POST   | /comment/:commentId/like                    | YES   | user  | Add or remove a like from a comment                  |
+| PUT    | /comment/myComment/:commentId               | YES   | User  | Modifies a comment from the user's own               |
+| PUT    | /comment/:commentId                         | YES   | Admin | Modify a comment                                     |
+| DELETE | /comment/:commentId                         | YES   | Admin | Delete a comment                                     |
+| DELETE | /comment/:mediaId/:commentId                | YES   | User  | Delete a comment from the user's own                 |
+
+### Notification Endpoints
+
+| METHOD | ENDPOINT                                    | TOKEN | ROLE  | DESCRIPTION                                          |
+| ------ | ------------------------------------------- | ----- | ----- | ---------------------------------------------------- |
+| GET    | /notification                               | YES   | User  | Receives notifications from the logged-in user       |
+| POST   | /notification                               | YES   | User  | Create a notification                                |
+| POST   | /notification/read                          | YES   | User  | Changes the notification from unread to read         |
+
+### Chat Endpoints
+
+| METHOD | ENDPOINT                                    | TOKEN | ROLE  | DESCRIPTION                                          |
+| ------ | ------------------------------------------- | ----- | ----- | ---------------------------------------------------- |
+| GET    | /chat/:id                                   | YES   | User  | Receives every message from a chat                   |
+| POST   | /chat/sendMessage                           | YES   | User  | Create a message                                     |
+
+### Payment Endpoint
+
+| METHOD | ENDPOINT                                    | TOKEN | ROLE  | DESCRIPTION                                          |
+| ------ | ------------------------------------------- | ----- | ----- | ---------------------------------------------------- |
+| POST   | /payment                                    | YES   | User  | Enables making donations                             |
